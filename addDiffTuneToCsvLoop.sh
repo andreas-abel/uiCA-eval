@@ -14,7 +14,7 @@ sed 1d "$1" | while IFS= read -r line; do
    echo ".loop:" > $asmFile
    llvm-objdump-10 -d --no-leading-addr --no-show-raw-insn $elfFile | sed 1,7d | cut -f2- >> $asmFile
    echo "jnz .loop" >> $asmFile
-   output=`../../DiffTune/llvm-mca -parameters ../../DiffTune/$2 -mtriple=x86_64-unknown-unknown -march=x86-64 -mcpu=haswell --all-views=0 --summary-view $asmFile`
+   output=`../DiffTune/llvm-mca -parameters ../DiffTune/$2 -mtriple=x86_64-unknown-unknown -march=x86-64 -mcpu=haswell --all-views=0 --summary-view $asmFile`
    it=`echo "$output" | grep "Iterations:" | tr -s ' ' | cut -d' ' -f2`
    if [ "$it" != "100" ]; then
       echo "Error: Unexpected iteration count"

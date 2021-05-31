@@ -13,7 +13,7 @@ sed 1d "$2" | while IFS= read -r line; do
    llvm-objcopy-10 -I binary -O elf64-x86-64 --rename-section=.data=.text,code $codeFile $elfFile
    llvm-objdump-10 -d --no-leading-addr --no-show-raw-insn $elfFile | sed 1,7d | cut -f2- > $asmFile
    if [ "$1" == "8" ]; then
-      output=`../../DiffTune/llvm-mca-8 --mcpu=$3 $asmFile`
+      output=`../DiffTune/llvm-mca-8 --mcpu=$3 $asmFile`
    else
       output=`llvm-mca-$1 --mcpu=$3 $asmFile`
    fi

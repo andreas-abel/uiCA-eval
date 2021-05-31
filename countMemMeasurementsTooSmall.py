@@ -6,10 +6,10 @@ import os
 import subprocess
 import sys
 
-sys.path.append('../../XED-to-XML')
+sys.path.append('../XED-to-XML')
 from disas import *
 
-sys.path.append('../../uiCA')
+sys.path.append('../uiCA')
 from x64_lib import *
 
 def main():
@@ -21,7 +21,7 @@ def main():
    with open(args.csv, 'r') as f:
       lines = f.read().splitlines()
    
-   xedBinary = os.path.join(os.path.dirname(__file__), '..', '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
+   xedBinary = os.path.join(os.path.dirname(__file__), '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
 
    count = 0
    for line in csv.reader(lines[1:]):
@@ -34,7 +34,7 @@ def main():
       hasMem = any(instr.memOperands for instr in disas if 'nop' not in instr.asm)
       tp = float(line[args.col])
 
-      if hasMem and (tp < 50):
+      if hasMem and (tp < 35):
          count += 1
          print line
 

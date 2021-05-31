@@ -7,10 +7,10 @@ import os
 import subprocess
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../XED-to-XML'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../XED-to-XML'))
 from disas import *
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../uiCA'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../uiCA'))
 from x64_lib import *
 
 def getAssemblerCode(filename):
@@ -45,7 +45,7 @@ def main():
       if not hexCode: continue
       with open('code', 'wb') as f:
          f.write(binascii.unhexlify(hexCode))
-      xedBinary = os.path.join(os.path.dirname(__file__), '..', '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
+      xedBinary = os.path.join(os.path.dirname(__file__), '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
       output = subprocess.check_output([xedBinary, '-64', '-v', '4', '-ir', 'code']).decode()
       disas = parseXedOutput(output)
       regs = set(getCanonicalReg(reg) for instr in disas for reg in instr.regOperands.values())

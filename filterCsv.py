@@ -5,10 +5,10 @@ import os
 import subprocess
 import sys
 
-sys.path.append('../../XED-to-XML')
+sys.path.append('../XED-to-XML')
 from disas import *
 
-sys.path.append('../../uiCA')
+sys.path.append('../uiCA')
 from x64_lib import *
 
 def hasX87StackUnderOrOverflow(disas):
@@ -38,7 +38,7 @@ def main():
    with open(args.csv, 'r') as f:
       lines = f.read().splitlines()
    
-   xedBinary = os.path.join(os.path.dirname(__file__), '..', '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
+   xedBinary = os.path.join(os.path.dirname(__file__), '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
 
    print lines[0]
    for line in lines[1:]:
