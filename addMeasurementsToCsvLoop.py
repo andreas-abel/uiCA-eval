@@ -59,15 +59,15 @@ def main():
             code_init2 = code + getHexCode('mov ' + reg + ', ' + str(2*rep))
 
             if args.detectBankConflicts:
-               output = subprocess.check_output(['../timing-harness-BankConfl/test', codeDecJmp, code_init2, "1"], stderr=devnull).decode()
+               output = subprocess.check_output(['../myBHIVE/timing-harness-BankConfl/test', codeDecJmp, code_init2, "1"], stderr=devnull).decode()
                minBankConflicts = min(int(ol.split()[4]) for ol in output.splitlines()[-10:])
                if minBankConflicts > 5:
                   linesWithBankConflicts.append(line + ' ' + str(minBankConflicts))
                   continue
          
             for _ in range(0,10):
-               output1 = subprocess.check_output(['../timing-harness/test', codeDecJmp, code_init1, "1"], stderr=devnull).decode()
-               output2 = subprocess.check_output(['../timing-harness/test', codeDecJmp, code_init2, "1"], stderr=devnull).decode()
+               output1 = subprocess.check_output(['../myBHIVE/timing-harness/test', codeDecJmp, code_init1, "1"], stderr=devnull).decode()
+               output2 = subprocess.check_output(['../myBHIVE/timing-harness/test', codeDecJmp, code_init2, "1"], stderr=devnull).decode()
 
                minTLBReadMisses = min(minTLBReadMisses, min(int(ol.split()[4]) for ol in output2.splitlines()[-10:]))
                minTLBWriteMisses = min(minTLBWriteMisses, min(int(ol.split()[3]) for ol in output2.splitlines()[-10:]))

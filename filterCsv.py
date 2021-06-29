@@ -28,16 +28,17 @@ def main():
    parser.add_argument('csv', help="csv file")
    parser.add_argument("-exclMemRW", help="exclude blocks that both read and write from/to memory", action='store_true')
    parser.add_argument("-exclMemRWDiffAddr", help="exclude blocks that write to memory, and read from a potentially different address", action='store_true')
-   parser.add_argument("-exclMemWDiffAddr", help="exclude blocks that have writes to potentially different address", action='store_true')   
+   parser.add_argument("-exclNoMemRWDiffAddr", help="exclude blocks that do not write to memory, and read from a potentially different address", action='store_true')
+   parser.add_argument("-exclMemWDiffAddr", help="exclude blocks that have writes to potentially different address", action='store_true')
    parser.add_argument("-exclNoMemRW", help="exclude blocks that do not both read and write from/to memory", action='store_true')
    parser.add_argument("-exclMem", help="exclude blocks that read or write from/to memory", action='store_true')
    parser.add_argument("-exclVarTP", help="exclude blocks with instructions with input-dependent TP", action='store_true')
    parser.add_argument("-exclNoVarTP", help="exclude blocks with no instructions with input-dependent TP", action='store_true')
    args = parser.parse_args()
-   
+
    with open(args.csv, 'r') as f:
       lines = f.read().splitlines()
-   
+
    xedBinary = os.path.join(os.path.dirname(__file__), '..', 'XED-to-XML', 'obj', 'wkit', 'bin', 'xed')
 
    print lines[0]
@@ -52,7 +53,7 @@ def main():
          #sys.stderr.write(line + '\n')
          continue
 
-      memR = [m for instr in disas for n, m in instr.memOperands.items() if ('MEM' in n) and ('R' in instr.rw[n])]      
+      memR = [m for instr in disas for n, m in instr.memOperands.items() if ('MEM' in n) and ('R' in instr.rw[n])]
       memW = [m for instr in disas for n, m in instr.memOperands.items() if ('MEM' in n) and ('W' in instr.rw[n])]
       allMem = memR + memW
       hasMem = len(allMem) > 0
@@ -65,12 +66,20 @@ def main():
          continue
       if args.exclMemRW and hasMemRW:
          continue
-      if args.exclMemRWDiffAddr and hasMemRW:
+
+      hasMemRWDiffAddr = False
+      if hasMemRW:
          if any((r in m) for m in allMem for r in modifiedRegs):
-            continue
-         firstAddr = allMem[0]  
+            hasMemRWDiffAddr = True
+         firstAddr = allMem[0]
          if any(m != firstAddr for m in allMem):
-            continue
+            hasMemRWDiffAddr = True
+
+      if args.exclMemRWDiffAddr and hasMemRWDiffAddr:
+         continue
+      if args.exclNoMemRWDiffAddr and (not hasMemRWDiffAddr):
+         continue
+
       if args.exclMemWDiffAddr and hasMemW:
          if any((r in m) for m in memW for r in modifiedRegs):
             continue
@@ -85,7 +94,7 @@ def main():
          continue
 
       print line
-   
+
 
 if __name__ == "__main__":
     main()

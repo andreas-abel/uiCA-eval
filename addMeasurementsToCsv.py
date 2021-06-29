@@ -48,7 +48,7 @@ def main():
             #allCycles2 = []
 
             if args.detectBankConflicts:
-               output = subprocess.check_output(['../timing-harness-BankConfl/test', code, code, str(2*nRep)], stderr=devnull).decode()
+               output = subprocess.check_output(['../myBHIVE/timing-harness-BankConfl/test', code, code, str(2*nRep)], stderr=devnull).decode()
                minBankConflicts = min(int(ol.split()[4]) for ol in output.splitlines()[-10:])
                if minBankConflicts > 5:
                   linesWithBankConflicts.append(line + ' ' + str(minBankConflicts))
@@ -58,8 +58,8 @@ def main():
                #for nRep in [nRep1]:
                   # code also passed to code_init (and thus executed before lfence); the first execution of code often leads to TLB misses that might, e.g.,
                   # influence the port assignment
-               output1 = subprocess.check_output(['../timing-harness/test', code, code, str(nRep)], stderr=devnull).decode()
-               output2 = subprocess.check_output(['../timing-harness/test', code, code, str(2*nRep)], stderr=devnull).decode()
+               output1 = subprocess.check_output(['../myBHIVE/timing-harness/test', code, code, str(nRep)], stderr=devnull).decode()
+               output2 = subprocess.check_output(['../myBHIVE/timing-harness/test', code, code, str(2*nRep)], stderr=devnull).decode()
                
                minTLBReadMisses = min(minTLBReadMisses, min(int(ol.split()[4]) for ol in output2.splitlines()[-10:]))
                minTLBWriteMisses = min(minTLBWriteMisses, min(int(ol.split()[3]) for ol in output2.splitlines()[-10:]))
