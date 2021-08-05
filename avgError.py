@@ -1,13 +1,34 @@
 #!/usr/bin/env python3
 
 import argparse
+import binascii
 import csv
+import os
+import subprocess
+import sys
 import numpy as np
 import scipy
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+from diskcache import Cache
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../uiCA'))
+from disas import *
+
+cache = Cache('memOpCache')
+
+@cache.memoize()
+def getNumberOfMemOps(hex):
+   with open('code', 'wb') as f:
+      f.write(binascii.unhexlify(hex))
+   output = subprocess.check_output(['../uiCA/xed', '-v', '4', '-64', '-ir',  'code']).decode()
+   disas = parseXedOutput(output)
+
+   memR = len([o for i in disas for o, m in i.rw.items() if ('MEM' in o) and ('R' in m) and not 'nop' in i.asm])
+   memW = len([o for i in disas for o, m in i.rw.items() if ('MEM' in o) and ('W' in m) and not 'nop' in i.asm])
+   return (memR, memW)
 
 # if cpiCol is not None, it must contain the column index of the assembler code; the TP is then normalized to CPI
 def getColumn(lines, colIdx, cpiCol=None):
@@ -17,8 +38,6 @@ def getColumn(lines, colIdx, cpiCol=None):
          print('Column not found')
          print(l)
          exit(1)
-      #print(l)
-      #print(float(l[colIdx]))
       TP = float(l[colIdx]) if (l[colIdx] not in ['fail', 'error', 'timeout', '']) else 0.0
       if cpiCol is not None:
          CPI = TP / (l[cpiCol].count(';') + 1)
@@ -44,7 +63,9 @@ def main():
    parser.add_argument('-baselineUnroll', action='store_true')
    parser.add_argument('-baselineLoop', action='store_true')
    parser.add_argument('-issueWidth', type=int, default=4)
+   parser.add_argument('-memWritePorts', type=int, default=1)
    parser.add_argument('-CPI', type=int, help='normalize TP to CPI; the parameter must contain the column index for the assembler code')
+   parser.add_argument('-category', nargs=2, help='only consider the specified category; 1st arg: csv file, 2nd arg: category')
    args = parser.parse_args()
 
    with open(args.csv, 'r') as f:
@@ -52,16 +73,33 @@ def main():
 
    lines = lines[1:]
 
+   if args.category:
+      category = args.category[1]
+      allBenchmarksForCategory = set()
+      with open(args.category[0], 'r') as f:
+         for line in f.read().splitlines():
+            benchCode, benchCat = line.split(',')
+            if benchCat == category:
+               allBenchmarksForCategory.add(benchCode)
+      lines = [l for l in lines if l.split(',')[0] in allBenchmarksForCategory]
+      print('Applicable lines: ' + str(len(lines)))
+
    #lines = [l for l in lines if not 'fail' in l]
 
    tp1L = getColumn(lines, args.col1, args.CPI)
 
+   tp2L = []
    if args.baselineUnroll:
-      tp2L = [25*(l.count(';') + 1) for l in lines]
+      for l in lines:
+         hex = l.split(',')[0]
+         memR, memW = getNumberOfMemOps(hex)
+         tp2L.append(max(25*(l.count(';') + 1), 100*memR/2, 100*memW/args.memWritePorts))
    elif args.baselineLoop:
-      mul = 100 / args.issueWidth
-      tp2L = [max(100, mul*(l.count(';'))) for l in lines]
-      #print(tp2L)
+      for l in lines:
+         hex = l.split(',')[0]
+         memR, memW = getNumberOfMemOps(hex)
+         mul = 100 / args.issueWidth
+         tp2L.append(max(100, mul*(l.count(';')), 100*memR/2, 100*memW/args.memWritePorts))
    else:
       tp2L = getColumn(lines, args.col2, args.CPI)
 
@@ -72,6 +110,7 @@ def main():
             #if tp1 != tp2:
             if abs(tp1-tp2)/tp1 > .1:
             #if abs(tp1-tp2) > 1:
+            #if 0.98*tp2 > tp1:
                print(l)
 
       if 'MAPE' in args.metrics:
@@ -116,25 +155,6 @@ def main():
 
       heatmap, _, _ = np.histogram2d(tp1L, tp2L, bins=bins)
 
-      #fig = plt.figure()
-      #heatMap = sns.heatmap(heatmap.T, norm=LogNorm(), cmap=sns.cm.rocket_r, vmin=1, vmax=50000)
-      #heatMap.invert_yaxis()
-      #plt.plot(np.linspace(start, end, 1000), np.linspace(start, end, 1000), 'k--', alpha=0.2)
-      #plt.grid()
-      #ax = fig.gca()
-      #ax.set_xticks(np.arange(5.5, 106, 10))
-      #ax.set_yticks(np.arange(5.5, 106, 10))
-      #plt.show()
-      #exit(0)
-
-      matplotlib.use("pgf")
-      matplotlib.rcParams.update({
-          "pgf.texsystem": "pdflatex",
-          'font.family': 'serif',
-          'text.usetex': True,
-          'pgf.rcfonts': False,
-      })
-
       # based on Ithemal's Figures.ipynb
 
       extreme = max(map(abs, (heatmap.T.max(), heatmap.T.min())))
@@ -142,7 +162,14 @@ def main():
       lognorm = LogNorm(vmin=1, vmax=50000)
       clim = (-extreme, extreme)
 
-      cmap = plt.get_cmap('bwr')
+      if args.heatmap[0]:
+         matplotlib.use("pgf")
+         matplotlib.rcParams.update({
+            "pgf.texsystem": "pdflatex",
+            'font.family': 'serif',
+            'text.usetex': True,
+            'pgf.rcfonts': False,
+         })
 
       fig = plt.figure(figsize=(8, 6))
       ax = fig.add_subplot(1, 1, 1)
@@ -157,7 +184,10 @@ def main():
       ax.set_ylabel('Predicted Throughput', fontsize=20)
       ax.set_title(args.heatmap[1], fontsize=20)
 
-      plt.savefig(args.heatmap[0], bbox_inches='tight')
+      if not args.heatmap[0]:
+         plt.show()
+      else:
+         plt.savefig(args.heatmap[0], bbox_inches='tight')
 
 
 if __name__ == "__main__":

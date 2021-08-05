@@ -1,9 +1,7 @@
 #!/usr/bin/python
 
 import argparse
-import os
 import subprocess
-import sys
 
 # run inside Ithemal docker container
 def main():
@@ -19,31 +17,28 @@ def main():
       elif args.arch == 'hsw':
          archLong = 'haswell'
       elif args.arch == 'skl':
-         archLong = 'skylake'      
+         archLong = 'skylake'
       dumpFile = '/home/ithemal/hosthome/code/Ithemal-models/paper/' + archLong + '/predictor.dump'
       mdlFile = '/home/ithemal/hosthome/code/Ithemal-models/paper/' + archLong + '/trained.mdl'
    elif args.model == 'bhive':
       dumpFile = '/home/ithemal/hosthome/code/Ithemal-models/bhive/' + args.arch + '.dump'
       mdlFile = '/home/ithemal/hosthome/code/Ithemal-models/bhive/' + args.arch + '.mdl'
-   
+
    with open(args.csv, 'r') as f:
       lines = f.read().splitlines()
 
-   print lines[0] + ',Ithemal_' + args.model
+   print(lines[0] + ',Ithemal_' + args.model)
    lines = lines[1:]
 
-   chunkSize = 1000
-   for linesChunk in (lines[i:i+chunkSize] for i in range(0, len(lines), chunkSize)):
-      ithemal = subprocess.Popen(['python', '/home/ithemal/ithemal/learning/pytorch/ithemal/predict.py', '--model', dumpFile, '--model-data', mdlFile,
-                                  '--raw-stdin'], stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-      for line in linesChunk:
-         code = line.split(',')[0]
-         ithemal.stdin.write(code+'\n')
-      outputLines = ithemal.communicate()[0].splitlines()
+   ithemal = subprocess.Popen(['python', '-u', '/home/ithemal/ithemal/learning/pytorch/ithemal/predict.py', '--model', dumpFile, '--model-data', mdlFile,
+                               '--raw-stdin'], stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+   for line in lines:
+      code = line.split(',')[0]
+      ithemal.stdin.write(code+'\n')
+      ithemal.stdin.flush()
+      outputLine = ithemal.stdout.readline().strip()
+      print(line + ',' + outputLine.split(',')[1])
 
-      for line, outputLine in zip(linesChunk, outputLines):
-         print line + ',' + outputLine.split(',')[1]
-     
 
 if __name__ == "__main__":
     main()
