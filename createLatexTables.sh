@@ -109,7 +109,7 @@ echo "                 & uiCA with simple port assignment & `getEntries clx '4 5
 echo "                 & uiCA without micro-fusion & `getEntries clx '4 5' _noMicroFusion` & `getEntriesLoop clx '7 8' _noMicroFusion`\\\\"
 echo "                 & uiCA without macro-fusion & `getEntries clx '4 5' _noMacroFusion` & `getEntriesLoop clx '7 8' _noMacroFusion`\\\\"
 echo "                 & uiCA without LSD unrolling & `getEntries clx '4 5' _noLSDUnrolling` & `getEntriesLoop clx '7 8' _noLSDUnrolling`\\\\"
-echo "                 & uiCA (simplified) & `getEntries clx '4 5' _maxSimplified` & `getEntriesLoop clx '7 8' _maxSimplified`\\\\"
+#echo "                 & uiCA (simplified) & `getEntries clx '4 5' _maxSimplified` & `getEntriesLoop clx '7 8' _maxSimplified`\\\\"
 echo "\midrule"
 echo "Cascade Lake & uiCA & `getEntries clx '4 5' _moveElim` & `getEntriesLoop clx '7 8' _moveElim` \\\\"
 echo "(benchmarks with moves) & uiCA without move elimination & `getEntries clx '4 5' _noMoveElim` & `getEntriesLoop clx '7 8' _noMoveElim`\\\\"
