@@ -16,19 +16,81 @@ from diskcache import Cache
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../uiCA'))
 from disas import *
+from x64_lib import *
 
-cache = Cache('memOpCache')
-
-@cache.memoize()
-def getNumberOfMemOps(hex):
+xedCache = Cache('xed', size_limit=4*1024*1024*1024)
+@xedCache.memoize()
+def getDisas(hex):
    with open('code', 'wb') as f:
       f.write(binascii.unhexlify(hex))
-   output = subprocess.check_output(['../uiCA/xed', '-v', '4', '-64', '-ir',  'code']).decode()
-   disas = parseXedOutput(output)
+   output = subprocess.check_output(['../uiCA/xed', '-v', '4', '-64', '-isa-set', '-chip-check', 'TIGER_LAKE', '-ir',  'code']).decode()
+   return parseXedOutput(output)
+
+memOpCache = Cache('memOpCache')
+@memOpCache.memoize()
+def getNumberOfMemOps(hex):
+   disas = getDisas(hex)
 
    memR = len([o for i in disas for o, m in i.rw.items() if ('MEM' in o) and ('R' in m) and not 'nop' in i.asm])
    memW = len([o for i in disas for o, m in i.rw.items() if ('MEM' in o) and ('W' in m) and not 'nop' in i.asm])
    return (memR, memW)
+
+def hasRWOp(hex):
+   disas = getDisas(hex)
+   return any(i for i in disas for o, m in i.rw.items() if ('R' in m) and ('W' in m))
+
+def getNumberOfLCP(hex):
+   disas = getDisas(hex)
+   return sum(('PREFIX66' in instrD.attributes) and (int(instrD.attributes.get('IMM_WIDTH', 0)) == 16) for instrD in disas)
+
+def hasMemRW(hex):
+   disas = getDisas(hex)
+   return any(i for i in disas for o, m in i.rw.items() if ('R' in m) and ('W' in m) and ('MEM' in o))
+
+# maximum latency between the same instructions in two consecutive iterations;
+# the latency of potentially eliminated instr. is assumed to be 0, the latency of address -> register 4, and all other latencies 1
+def getMaxLat(hex):
+   disas = [i for i in getDisas(hex) if (not 'nop' in i.asm) and any(('REG' in n) and (('W' in rw)) for n, rw in i.rw.items())]
+
+   maxLat = 0
+   for i in range(len(disas)):
+      baseInstr = disas[i]
+      baseInstrWRegs = {getCanonicalReg(r) for n, r in baseInstr.regOperands.items() if (not 'RFLAGS' in r) and ('W' in baseInstr.rw[n])}
+      latForReg = {r: 0 for r in baseInstrWRegs}
+      if baseInstrWRegs:
+         for instr in disas[i+1:] + disas[:i+1]:
+            rRegs = [getCanonicalReg(r) for n, r in instr.regOperands.items() if (not 'RFLAGS' in r) and (('R' in instr.rw[n]) or (r in Low8Regs))]
+            wRegs = [getCanonicalReg(r) for n, r in instr.regOperands.items() if (not 'RFLAGS' in r) and ('W' in instr.rw[n])]
+            addrRegs = []
+            for _, m in instr.memOperands.items():
+               memAddr = getMemAddr(m)
+               memRegs = [r for r in [memAddr.base, memAddr.index] if r is not None]
+               if 'lea' in instr.asm:
+                  rRegs.extend(memRegs)
+               else:
+                  addrRegs.extend(memRegs)
+
+            curLat = -1
+            if (len(rRegs) == len(set(rRegs))) or (not any(m in instr.asm for m in ['xor', 'sub', 'pcmp'])):
+               for r in set(rRegs) & latForReg.keys():
+                  if ('mov' in instr.asm) and (len(instr.regOperands) == 2) and (not 'movsx' in instr.asm): # potentially eliminated
+                     curLat = max(curLat, latForReg[r])
+                  else:
+                     curLat = max(curLat, latForReg[r] + 1)
+               for r in set(addrRegs) & latForReg.keys():
+                  curLat = max(curLat, latForReg[r] + 4)
+
+            for wr in wRegs:
+               if curLat >= 0:
+                  latForReg[wr] = curLat
+               else:
+                  if wr in latForReg:
+                     del latForReg[wr]
+
+         for r in baseInstrWRegs & latForReg.keys():
+            maxLat = max(maxLat, latForReg[r])
+
+   return maxLat
 
 # if cpiCol is not None, it must contain the column index of the assembler code; the TP is then normalized to CPI
 def getColumn(lines, colIdx, cpiCol=None):
@@ -90,16 +152,33 @@ def main():
 
    tp2L = []
    if args.baselineUnroll:
-      for l in lines:
+      for i, l in enumerate(lines):
          hex = l.split(',')[0]
+         nInstr = l.count(';') + 1
          memR, memW = getNumberOfMemOps(hex)
-         tp2L.append(max(25*(l.count(';') + 1), 100*memR/2, 100*memW/args.memWritePorts))
+         lat = getMaxLat(hex)
+         preDec = (len(hex)/2) / 16
+
+         misc = 0
+         #misc = max(misc, getNumberOfLCP(hex) * 3.2)
+         #misc = max(misc, l.count('lea')/2)
+         tp2L.append(100 * max(nInstr/4, memR/2, memW/args.memWritePorts, lat, preDec, misc))
+
+         #if tp2L[-1] * .98 > tp1L[i]:
+         #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
+
    elif args.baselineLoop:
-      for l in lines:
-         hex = l.split(',')[0]
+      for i, l in enumerate(lines):
+         hex = l.split(',')[0] + l.split(',')[1]
+         nInstr = l.count(';') # omit one bec. of macro fusion
          memR, memW = getNumberOfMemOps(hex)
-         mul = 100 / args.issueWidth
-         tp2L.append(max(100, mul*(l.count(';')), 100*memR/2, 100*memW/args.memWritePorts))
+         lat = getMaxLat(hex)
+         misc = 0
+         #misc = max(misc, l.count('lea')/2)
+         tp2L.append(100 * max(nInstr/args.issueWidth, memR/2, memW/args.memWritePorts, lat, misc))
+
+         #if tp2L[-1] * .98 > tp1L[i]:
+         #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
    else:
       tp2L = getColumn(lines, args.col2, args.CPI)
 
@@ -108,10 +187,10 @@ def main():
          for tp1, tp2, l in zip(tp1L, tp2L, lines):
             #if not (tp1>0 and tp2>0): continue
             #if tp1 != tp2:
-            if abs(tp1-tp2)/tp1 > .1:
+            #if abs(tp1-tp2)/tp1 > .1:
             #if abs(tp1-tp2) > 1:
-            #if 0.98*tp2 > tp1:
-               print(l)
+            if tp1 < 0.98 * tp2:
+               print(l + ' - ' + str(tp1) + ',' + str(tp2))
 
       if 'MAPE' in args.metrics:
          error = getError(tp1L, tp2L) * 100
