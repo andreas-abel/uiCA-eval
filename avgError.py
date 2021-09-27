@@ -18,7 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ui
 from disas import *
 from x64_lib import *
 
-xedCache = Cache('xed', size_limit=4*1024*1024*1024)
+xedCache = Cache('/tmp/cache/xed', size_limit=4*1024*1024*1024)
 @xedCache.memoize()
 def getDisas(hex):
    with open('code', 'wb') as f:
@@ -26,7 +26,7 @@ def getDisas(hex):
    output = subprocess.check_output(['../uiCA/xed', '-v', '4', '-64', '-isa-set', '-chip-check', 'TIGER_LAKE', '-ir',  'code']).decode()
    return parseXedOutput(output)
 
-memOpCache = Cache('memOpCache')
+memOpCache = Cache('/tmp/cache/memOpCache')
 @memOpCache.memoize()
 def getNumberOfMemOps(hex):
    disas = getDisas(hex)
