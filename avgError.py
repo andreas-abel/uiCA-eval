@@ -156,13 +156,13 @@ def main():
          hex = l.split(',')[0]
          nInstr = l.count(';') + 1
          memR, memW = getNumberOfMemOps(hex)
-         lat = getMaxLat(hex)
+         #lat = getMaxLat(hex)
          preDec = (len(hex)/2) / 16
 
          misc = 0
          #misc = max(misc, getNumberOfLCP(hex) * 3.2)
          #misc = max(misc, l.count('lea')/2)
-         tp2L.append(100 * max(nInstr/4, memR/2, memW/args.memWritePorts, lat, preDec, misc))
+         tp2L.append(100 * max(nInstr/4, memR/2, memW/args.memWritePorts)) #, lat, preDec, misc))
 
          #if tp2L[-1] * .98 > tp1L[i]:
          #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
@@ -175,7 +175,7 @@ def main():
          lat = getMaxLat(hex)
          misc = 0
          #misc = max(misc, l.count('lea')/2)
-         tp2L.append(100 * max(nInstr/args.issueWidth, memR/2, memW/args.memWritePorts, lat, misc))
+         tp2L.append(100 * max(nInstr/args.issueWidth, memR/2, memW/args.memWritePorts)) #, lat, misc))
 
          #if tp2L[-1] * .98 > tp1L[i]:
          #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
