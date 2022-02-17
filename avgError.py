@@ -175,7 +175,7 @@ def main():
          lat = getMaxLat(hex)
          misc = 0
          #misc = max(misc, l.count('lea')/2)
-         tp2L.append(100 * max(nInstr/args.issueWidth, memR/2, memW/args.memWritePorts)) #, lat, misc))
+         tp2L.append(100 * max(1, nInstr/args.issueWidth, memR/2, memW/args.memWritePorts)) #, lat, misc))
 
          #if tp2L[-1] * .98 > tp1L[i]:
          #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
