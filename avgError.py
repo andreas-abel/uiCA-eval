@@ -1,79 +1,51 @@
 #!/usr/bin/env python3
 
 import argparse
-import binascii
 import csv
 import os
-import subprocess
 import sys
 import numpy as np
-import scipy
-import seaborn as sns
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
-from diskcache import Cache
+import scipy.stats
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../uiCA'))
-from disas import *
+import xed
 from x64_lib import *
 
-xedCache = Cache('/tmp/cache/xed', size_limit=4*1024*1024*1024)
-@xedCache.memoize()
-def getDisas(hex):
-   with open('code', 'wb') as f:
-      f.write(binascii.unhexlify(hex))
-   output = subprocess.check_output(['../uiCA/xed', '-v', '4', '-64', '-isa-set', '-chip-check', 'TIGER_LAKE', '-ir',  'code']).decode()
-   return parseXedOutput(output)
 
-memOpCache = Cache('/tmp/cache/memOpCache')
-@memOpCache.memoize()
-def getNumberOfMemOps(hex):
-   disas = getDisas(hex)
-
-   memR = len([o for i in disas for o, m in i.rw.items() if ('MEM' in o) and ('R' in m) and not 'nop' in i.asm])
-   memW = len([o for i in disas for o, m in i.rw.items() if ('MEM' in o) and ('W' in m) and not 'nop' in i.asm])
+def getNumberOfMemOps(disas):
+   memR = len([o for i in disas for o, m in i['rw'].items() if ('MEM' in o) and ('R' in m) and not 'nop' in i['asm']])
+   memW = len([o for i in disas for o, m in i['rw'].items() if ('MEM' in o) and ('W' in m) and not 'nop' in i['asm']])
    return (memR, memW)
 
-def hasRWOp(hex):
-   disas = getDisas(hex)
-   return any(i for i in disas for o, m in i.rw.items() if ('R' in m) and ('W' in m))
-
-def getNumberOfLCP(hex):
-   disas = getDisas(hex)
-   return sum(('PREFIX66' in instrD.attributes) and (int(instrD.attributes.get('IMM_WIDTH', 0)) == 16) for instrD in disas)
-
-def hasMemRW(hex):
-   disas = getDisas(hex)
-   return any(i for i in disas for o, m in i.rw.items() if ('R' in m) and ('W' in m) and ('MEM' in o))
+def getNumberOfLCP(disas):
+   return sum((instrD['prefix66'] != '0') and (instrD.get('IMM_WIDTH', 0) == 16) for instrD in disas)
 
 # maximum latency between the same instructions in two consecutive iterations;
 # the latency of potentially eliminated instr. is assumed to be 0, the latency of address -> register 4, and all other latencies 1
-def getMaxLat(hex):
-   disas = [i for i in getDisas(hex) if (not 'nop' in i.asm) and any(('REG' in n) and (('W' in rw)) for n, rw in i.rw.items())]
+def getMaxLat(disas):
+   disas = [i for i in disas if (not 'nop' in i['asm']) and any(('REG' in n) and (('W' in rw)) for n, rw in i['rw'].items())]
 
    maxLat = 0
    for i in range(len(disas)):
       baseInstr = disas[i]
-      baseInstrWRegs = {getCanonicalReg(r) for n, r in baseInstr.regOperands.items() if (not 'RFLAGS' in r) and ('W' in baseInstr.rw[n])}
+      baseInstrWRegs = {getCanonicalReg(r) for n, r in baseInstr['regOperands'].items() if (not 'RFLAGS' in r) and ('W' in baseInstr['rw'][n])}
       latForReg = {r: 0 for r in baseInstrWRegs}
       if baseInstrWRegs:
          for instr in disas[i+1:] + disas[:i+1]:
-            rRegs = [getCanonicalReg(r) for n, r in instr.regOperands.items() if (not 'RFLAGS' in r) and (('R' in instr.rw[n]) or (r in Low8Regs))]
-            wRegs = [getCanonicalReg(r) for n, r in instr.regOperands.items() if (not 'RFLAGS' in r) and ('W' in instr.rw[n])]
+            rRegs = [getCanonicalReg(r) for n, r in instr['regOperands'].items() if (not 'RFLAGS' in r) and (('R' in instr['rw'][n]) or (r in Low8Regs))]
+            wRegs = [getCanonicalReg(r) for n, r in instr['regOperands'].items() if (not 'RFLAGS' in r) and ('W' in instr['rw'][n])]
             addrRegs = []
-            for _, m in instr.memOperands.items():
-               memAddr = getMemAddr(m)
-               memRegs = [r for r in [memAddr.base, memAddr.index] if r is not None]
-               if 'lea' in instr.asm:
+            for _, m in instr['memOperands'].items():
+               memRegs = [r for r in [m.get('base'), m.get('index')] if r is not None]
+               if 'lea' in instr['asm']:
                   rRegs.extend(memRegs)
                else:
                   addrRegs.extend(memRegs)
 
             curLat = -1
-            if (len(rRegs) == len(set(rRegs))) or (not any(m in instr.asm for m in ['xor', 'sub', 'pcmp'])):
+            if (len(rRegs) == len(set(rRegs))) or (not any(m in instr['asm'] for m in ['xor', 'sub', 'pcmp'])):
                for r in set(rRegs) & latForReg.keys():
-                  if ('mov' in instr.asm) and (len(instr.regOperands) == 2) and (not 'movsx' in instr.asm): # potentially eliminated
+                  if ('mov' in instr['asm']) and (len(instr['regOperands']) == 2) and (not 'movsx' in instr['asm']): # potentially eliminated
                      curLat = max(curLat, latForReg[r])
                   else:
                      curLat = max(curLat, latForReg[r] + 1)
@@ -155,12 +127,13 @@ def main():
       for i, l in enumerate(lines):
          hex = l.split(',')[0]
          nInstr = l.count(';') + 1
-         memR, memW = getNumberOfMemOps(hex)
-         #lat = getMaxLat(hex)
+         disas = xed.disasHex(hex, chip='TIGER_LAKE')
+         memR, memW = getNumberOfMemOps(disas)
+         #lat = getMaxLat(disas)
          preDec = (len(hex)/2) / 16
 
          misc = 0
-         #misc = max(misc, getNumberOfLCP(hex) * 3.2)
+         #misc = max(misc, getNumberOfLCP(disas) * 3.2)
          #misc = max(misc, l.count('lea')/2)
          tp2L.append(100 * max(nInstr/4, memR/2, memW/args.memWritePorts)) #, lat, preDec, misc))
 
@@ -171,8 +144,9 @@ def main():
       for i, l in enumerate(lines):
          hex = l.split(',')[0] + l.split(',')[1]
          nInstr = l.count(';') # omit one bec. of macro fusion
-         memR, memW = getNumberOfMemOps(hex)
-         lat = getMaxLat(hex)
+         disas = xed.disasHex(hex, chip='TIGER_LAKE')
+         memR, memW = getNumberOfMemOps(disas)
+         #lat = getMaxLat(disas)
          misc = 0
          #misc = max(misc, l.count('lea')/2)
          tp2L.append(100 * max(1, nInstr/args.issueWidth, memR/2, memW/args.memWritePorts)) #, lat, misc))
@@ -217,6 +191,11 @@ def main():
          else:
             print(spearman)
    else:
+      import seaborn as sns
+      import matplotlib
+      import matplotlib.pyplot as plt
+      from matplotlib.colors import LogNorm
+
       start = 0
       end = 1000
 
