@@ -142,7 +142,7 @@ def main():
 
    elif args.baselineLoop:
       for i, l in enumerate(lines):
-         hex = l.split(',')[0] + l.split(',')[1]
+         hex = l.split(',')[0] + l.split(',')[1] + l.split(',')[2]
          nInstr = l.count(';') # omit one bec. of macro fusion
          disas = xed.disasHex(hex, chip='TIGER_LAKE')
          memR, memW = getNumberOfMemOps(disas)
