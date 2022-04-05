@@ -4,23 +4,35 @@ tmpFile=`mktemp --tmpdir tmp.XXXXXXXXXX`
 trap "rm $tmpFile" EXIT
 
 getEntries() {
-   echo `./avgError.py "$1/$1""_uica""$3"".csv" $2 -metric MAPE -round`"\% & "`./avgError.py "$1/$1""_uica""$3"".csv" $2 -metric kendall -round`
+   output=`./avgError.py "$1/$1""_uica""$3"".csv" $2 -metric MAPE,kendall -round`
+   MAPE=`echo "$output" | grep MAPE | cut -d" "  -f2`
+   kendall=`echo "$output" | grep Kendall | cut -d" "  -f2`
+   echo "${MAPE}\% & ${kendall}"
 }
 
 getEntriesWrongDef() {
-   echo "\wrongDef{"`./avgError.py "$1/$1""_uica""$3"".csv" $2 -metric MAPE -round`"\%} & \wrongDef{"`./avgError.py "$1/$1""_uica""$3"".csv" $2 -metric kendall -round`"}"
+   output=`./avgError.py "$1/$1""_uica""$3"".csv" $2 -metric MAPE,kendall -round`
+   MAPE=`echo "$output" | grep MAPE | cut -d" "  -f2`
+   kendall=`echo "$output" | grep Kendall | cut -d" "  -f2`
+   echo "\wrongDef{${MAPE}\%} & \wrongDef{${kendall}}"
 }
 
 getEntriesLoop() {
    cp "$1/$1""_loop_uica""$3"".csv" $tmpFile
    tail -n +2  "$1/$1""_loop5_uica""$3"".csv" >> $tmpFile
-   echo `./avgError.py $tmpFile $2 -metric MAPE -round`"\% & "`./avgError.py $tmpFile $2 -metric kendall -round`
+   output=`./avgError.py $tmpFile $2 -metric MAPE,kendall -round`
+   MAPE=`echo "$output" | grep MAPE | cut -d" "  -f2`
+   kendall=`echo "$output" | grep Kendall | cut -d" "  -f2`
+   echo "${MAPE}\% & ${kendall}"
 }
 
 getEntriesLoopWrongDef() {
    cp "$1/$1""_loop_uica""$3"".csv" $tmpFile
    tail -n +2  "$1/$1""_loop5_uica""$3"".csv" >> $tmpFile
-   echo "\wrongDef{"`./avgError.py $tmpFile $2 -metric MAPE -round`"\%} & \wrongDef{"`./avgError.py $tmpFile $2 -metric kendall -round`"}"
+   output=`./avgError.py $tmpFile $2 -metric MAPE,kendall -round`
+   MAPE=`echo "$output" | grep MAPE | cut -d" "  -f2`
+   kendall=`echo "$output" | grep Kendall | cut -d" "  -f2`
+   echo "\wrongDef{${MAPE}\%} & \wrongDef{${kendall}}"
 }
 
 echo "\newcommand{\wrongDef}[1]{\textcolor{gray}{#1}}"

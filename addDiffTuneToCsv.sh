@@ -1,13 +1,10 @@
 #!/bin/bash
 
-codeFile=`mktemp --tmpdir code.XXXXXXXXXX`
-elfFile=`mktemp --tmpdir code.elf.XXXXXXXXXX`
-asmFile=`mktemp --tmpdir asm.XXXXXXXXXX`
-
-trap "rm $codeFile $elfFile $asmFile " EXIT
-
-echo `head -n 1 "$1"`",DiffTune"
-sed 1d "$1" | while IFS= read -r line; do   
+run_DiffTune() {
+   line=$1
+   codeFile=`mktemp --tmpdir code.XXXXXXXXXX`
+   elfFile=`mktemp --tmpdir code.elf.XXXXXXXXXX`
+   asmFile=`mktemp --tmpdir asm.XXXXXXXXXX`
    hex=`echo $line | cut -d, -f1`
    perl -e "print pack 'H*', \"$hex\"" > $codeFile
    llvm-objcopy-10 -I binary -O elf64-x86-64 --rename-section=.data=.text,code $codeFile $elfFile
@@ -19,5 +16,10 @@ sed 1d "$1" | while IFS= read -r line; do
       exit 1
    fi
    TP=`echo "$output" | grep "Total Cycles:" | tr -s ' ' | cut -d' ' -f3`
+   rm $codeFile $elfFile $asmFile
    echo "$line,$TP"
-done
+}
+export -f run_DiffTune
+
+echo `head -n 1 "$1"`",DiffTune"
+sed 1d "$1" | parallel --keep-order run_DiffTune {} $2

@@ -92,7 +92,7 @@ def main():
    parser.add_argument('col2', type=int, nargs='?')
    parser.add_argument('-heatmap', nargs=2, help='1st arg: filename, 2nd arg: title')
    parser.add_argument('-showDiff', action='store_true')
-   parser.add_argument('-metrics', default='MAPE,kendall,pearson,spearman')
+   parser.add_argument('-metrics', default='count,MAPE,kendall,pearson,spearman')
    parser.add_argument('-round', action='store_true')
    parser.add_argument('-baselineUnroll', action='store_true')
    parser.add_argument('-baselineLoop', action='store_true')
@@ -161,35 +161,37 @@ def main():
          for tp1, tp2, l in zip(tp1L, tp2L, lines):
             #if not (tp1>0 and tp2>0): continue
             #if tp1 != tp2:
-            #if abs(tp1-tp2)/tp1 > .1:
+            if abs(tp1-tp2)/tp1 > .1:
             #if abs(tp1-tp2) > 1:
-            if tp1 < 0.98 * tp2:
+            #if tp1 < 0.98 * tp2:
                print(l + ' - ' + str(tp1) + ',' + str(tp2))
 
+      if 'count' in args.metrics:
+         print('Count: {}'.format(len(lines)))
       if 'MAPE' in args.metrics:
          error = getError(tp1L, tp2L) * 100
          if args.round:
-            print('{:.2f}'.format(error,2))
+            print('MAPE: {:.2f}'.format(error))
          else:
-            print(error)
+            print('MAPE: {}'.format(error))
       if 'kendall' in args.metrics:
          tau = scipy.stats.kendalltau(tp1L, tp2L)
          if args.round:
-            print('{:.4f}'.format(tau[0],4))
+            print('Kendall: {:.4f}'.format(tau[0]))
          else:
-            print(tau)
+            print('Kendall: {}'.format(tau[0]))
       if 'pearson' in args.metrics:
          pearson = scipy.stats.pearsonr(tp1L, tp2L)
          if args.round:
-            print('{:.4f}'.format(pearson[0]))
+            print('Person: {:.4f}'.format(pearson[0]))
          else:
-            print(pearson)
+            print('Person: {}'.format(pearson[0]))
       if 'spearman' in args.metrics:
          spearman = scipy.stats.spearmanr(tp1L, tp2L)
          if args.round:
-            print('{:.4f}'.format(spearman[0]))
+            print('Spearman: {:.4f}'.format(spearman[0]))
          else:
-            print(spearman)
+            print('Spearman: {}'.format(spearman[0]))
    else:
       import seaborn as sns
       import matplotlib
