@@ -100,6 +100,7 @@ def main():
    parser.add_argument('-memWritePorts', type=int, default=1)
    parser.add_argument('-CPI', type=int, help='normalize TP to CPI; the parameter must contain the column index for the assembler code')
    parser.add_argument('-category', nargs=2, help='only consider the specified category; 1st arg: csv file, 2nd arg: category')
+   parser.add_argument('-source', nargs=2, help='only consider the specified source; 1st arg: sources folder, 2nd arg: source application')
    args = parser.parse_args()
 
    with open(args.csv, 'r') as f:
@@ -116,7 +117,25 @@ def main():
             if benchCat == category:
                allBenchmarksForCategory.add(benchCode)
       lines = [l for l in lines if l.split(',')[0] in allBenchmarksForCategory]
-      print('Applicable lines: ' + str(len(lines)))
+
+   if args.source:
+      sourceFileMap = {
+         'OpenBLAS': [f for _, _, fs in os.walk(args.source[0]) for f in fs if f.startswith('openblas')],
+         'Redis': ['redis-server.csv'],
+         'SQLite': ['sqlite.csv'],
+         'GZip': ['gzip-compress.csv', 'gzip-decompress.csv'],
+         'TensorFlow': ['tensorflow.csv'],
+         'Clang/LLVM': ['clang.csv'],
+         'Eigen': ['eigen-matmat.csv', 'eigen-vecmat.csv'],
+         'Embree': ['embree.csv'],
+         'FFmpeg': ['ffmpeg.csv'],
+         'OpenSSL': ['openssl.csv']
+      }
+      allBenchmarksForSource = set()
+      for filename in sourceFileMap[args.source[1]]:
+         with open(os.path.join(args.source[0], filename), 'r') as f:
+            allBenchmarksForSource.update(l.split(',')[0] for l in f.read().splitlines())
+      lines = [l for l in lines if l.split(',')[0] in allBenchmarksForSource]
 
    #lines = [l for l in lines if not 'fail' in l]
 

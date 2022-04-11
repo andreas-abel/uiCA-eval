@@ -7,7 +7,7 @@ asmFile=`mktemp --tmpdir asm.XXXXXXXXXX`
 trap "rm $codeFile $elfFile $asmFile " EXIT
 
 echo `head -n 1 "$2"`",LLVM-MCA-$1"
-sed 1d "$2" | while IFS= read -r line; do   
+sed 1d "$2" | while IFS= read -r line; do
    hex=`echo $line | cut -d, -f1`
    perl -e "print pack 'H*', \"$hex\"" > $codeFile
    llvm-objcopy-10 -I binary -O elf64-x86-64 --rename-section=.data=.text,code $codeFile $elfFile
