@@ -120,7 +120,7 @@ echo "\end{table}"
 echo ""
 
 echo "\begin{table*}"
-echo "\caption{Influence of different {$\mu$}Arch components on the prediction accuracy}"
+echo "\caption{Influence of the simulation of different microarchitectural components on the prediction accuracy}"
 echo "\labeltab{evaluiCA}"
 echo "\begin{tabular}{llrcrc}"
 echo "\toprule"
