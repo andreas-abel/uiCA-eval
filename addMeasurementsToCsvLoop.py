@@ -13,12 +13,12 @@ import sys
 def getHexCode(assemblerCode):
    with open('code.s', 'w') as f:
       f.write('.intel_syntax noprefix\n')
-      f.write(assemblerCode + '\n')      
+      f.write(assemblerCode + '\n')
    subprocess.check_call(['as', 'code.s', '-o', 'code.o'])
-   subprocess.check_call(['objcopy', 'code.o', '-O', 'binary', 'code.o'])
+   subprocess.check_call(['objcopy', 'code.o', '-j', '.text', '-O', 'binary', 'code.o'])
    with open('code.o', 'rb') as f:
       return binascii.hexlify(f.read()).decode()
-      
+
 
 def main():
    parser = argparse.ArgumentParser(description='Measurements')
@@ -35,7 +35,7 @@ def main():
    linesWithDifferentMeasurements = []
    linesWithErrors = []
    linesWithBankConflicts = []
-   
+
    with open(args.csv, 'r') as f:
       lines = f.read().splitlines()
 
@@ -64,7 +64,7 @@ def main():
                if minBankConflicts > 5:
                   linesWithBankConflicts.append(line + ' ' + str(minBankConflicts))
                   continue
-         
+
             for _ in range(0,10):
                output1 = subprocess.check_output(['../myBHIVE/timing-harness/test', codeDecJmp, code_init1, "1"], stderr=devnull).decode()
                output2 = subprocess.check_output(['../myBHIVE/timing-harness/test', codeDecJmp, code_init2, "1"], stderr=devnull).decode()
@@ -79,7 +79,7 @@ def main():
             minCycles = sorted(cycles)[len(cycles)//5]
             maxCycles = sorted(cycles)[4*len(cycles)//5]
             medCycles = sorted(cycles)[len(cycles)//2]
-            
+
             if minTLBReadMisses > 5:
                linesWithTLBReadMisses.append(line + ' ' + str(minTLBReadMisses))
             elif minTLBWriteMisses > 5:
