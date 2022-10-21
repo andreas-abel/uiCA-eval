@@ -1,0 +1,266 @@
+\documentclass[sigconf,nonacm]{acmart}
+\usepackage{booktabs}
+\usepackage{import}
+\usepackage{multirow}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage{subcaption}
+\usepackage{xspace}
+\newcommand{\bhivel}{\emph{BHive\textsubscript{L}}\xspace}
+\newcommand{\bhiveu}{\emph{BHive\textsubscript{U}}\xspace}
+\newcommand{\uiCA}{uiCA\xspace}
+\begin{document}
+\title{}\title{}
+\thispagestyle{empty}
+
+\newcommand{\wrongDef}[1]{\textcolor{gray}{#1}}
+\begin{table}
+\caption{Comparison of different tools on \bhiveu and \bhivel}
+\begin{center}
+\resizebox*{!}{.975\textheight}{
+\begin{tabular}{llrcrc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{\bhiveu}} & \multicolumn{2}{c}{\textbf{\bhivel}}\\  \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\textbf{{$\mu$}Arch}  & \textbf{Predictor} & \textbf{MAPE} & \textbf{Kendall} & \textbf{MAPE} & \textbf{Kendall} \\
+\midrule
+\multirow{2}{*}{RKL}  & \uiCA & 0.49\% & 0.9835 & 0.92\% & 0.9755 \\
+                      & Baseline & 15.50\% & 0.7397 & 9.26\% & 0.7808\\
+\midrule
+\multirow{3}{*}{TGL}  & \uiCA & 0.97\% & 0.9769 & 0.98\% & 0.9731 \\
+                      & llvm-mca-10 & \wrongDef{25.74\%} & \wrongDef{0.7049} & 13.80\% & 0.8486\\
+                      & Baseline & 17.49\% & 0.7245 & 11.25\% & 0.7413\\
+\midrule
+\multirow{5}{*}{ICL}  & \uiCA & 1.00\% & 0.9771 & 0.77\% & 0.9759 \\
+                      & OSACA & \wrongDef{53.80\%} & \wrongDef{0.3143} & 21.98\% & 0.4698 \\
+                      & llvm-mca-10 & \wrongDef{25.38\%} & \wrongDef{0.7030} & 13.64\% & 0.8512 \\
+                      & CQA & & & 6.74\% & 0.8835 \\
+                      & Baseline & 17.54\% & 0.7230 & 10.84\% & 0.7510\\
+\midrule
+\multirow{4}{*}{CLX}  & \uiCA & 0.45\% & 0.9713 & 0.65\% & 0.9825 \\
+                      & llvm-mca-10 & \wrongDef{23.17\%} & \wrongDef{0.7211} & 13.21\% & 0.8060 \\
+                      & OSACA & \wrongDef{20.83\%} & \wrongDef{0.7511} & 11.61\% & 0.8068 \\
+                      & Baseline & 15.49\% & 0.7461 & 10.31\% & 0.8021\\
+\midrule
+\multirow{11}{*}{SKL} & \uiCA & 0.45\% & 0.9798 & 0.38\% & 0.9895 \\
+                      & Ithemal & 8.28\% & 0.8172 & \wrongDef{13.66\%} & \wrongDef{0.7582} \\
+                      & IACA 3.0 & \wrongDef{13.49\%} & \wrongDef{0.7802} & 14.26\% & 0.8290 \\
+                      & IACA 2.3 & \wrongDef{11.85\%} & \wrongDef{0.8071} & 8.42\% & 0.8477 \\
+                      & OSACA & \wrongDef{14.95\%} & \wrongDef{0.7639} & 11.25\% & 0.8045 \\
+                      & llvm-mca-10 & \wrongDef{15.61\%} & \wrongDef{0.7258} & 12.01\% & 0.8015 \\
+                      & llvm-mca-8 & \wrongDef{15.39\%} & \wrongDef{0.7434} & 11.98\% & 0.8021 \\
+                      & DiffTune & 24.48\% & 0.6626 & 104.88\% & 0.6426 \\
+                      & CQA & & & 7.44\% & 0.8847 \\
+                      & \emph{Measured (orig.)} & 4.40\% & 0.9113 \\
+                      & Baseline & 17.28\% & 0.7228 & 10.03\% & 0.7999\\
+\midrule
+\multirow{7}{*}{BDW}  & \uiCA & 1.08\% & 0.9805 & 0.60\% & 0.9841 \\ 
+                      & IACA 3.0 & \wrongDef{14.69\%} & \wrongDef{0.8012} & 11.47\% & 0.8725 \\
+                      & IACA 2.3 & \wrongDef{13.22\%} & \wrongDef{0.8206} & 5.84\% & 0.8928 \\
+                      & OSACA & \wrongDef{17.52\%} & \wrongDef{0.7456} & 9.69\% & 0.8365 \\
+                      & llvm-mca-10 & \wrongDef{14.23\%} & \wrongDef{0.7793} & 16.71\% & 0.8286 \\
+                      & CQA & & & 5.03\% & 0.9213 \\
+                      & Baseline & 16.97\% & 0.7572 & 7.44\% & 0.8332\\
+\midrule
+\multirow{11}{*}{HSW} & \uiCA & 0.76\% & 0.9850 & 0.59\% & 0.9842 \\ 
+                      & Ithemal & 7.38\% & 0.8400 & \wrongDef{16.19\%} & \wrongDef{0.7700} \\
+                      & IACA 3.0 & \wrongDef{15.04\%} & \wrongDef{0.8080} & 12.00\% & 0.8733 \\
+                      & IACA 2.3 & \wrongDef{13.13\%} & \wrongDef{0.8291} & 5.79\% & 0.8925 \\
+                      & OSACA & \wrongDef{17.84\%} & \wrongDef{0.7463} & 9.77\% & 0.8307 \\
+                      & llvm-mca-10 & \wrongDef{20.29\%} & \wrongDef{0.7835} & 18.97\% & 0.8259 \\
+                      & llvm-mca-8 & \wrongDef{21.08\%} & \wrongDef{0.7784} & 19.46\% & 0.8171 \\
+                      & DiffTune & 24.80\% & 0.6997 & 138.47\% & 0.6925 \\
+                      & CQA & & & 5.08\% & 0.9220 \\
+                      & \emph{Measured (orig.)} & 2.49\% & 0.9379 \\
+                      & Baseline & 17.30\% & 0.7604 & 7.57\% & 0.8314\\
+\midrule
+\multirow{10}{*}{IVB} & \uiCA & 1.50\% & 0.9609 & 1.11\% & 0.9495 \\ 
+                      & Ithemal & 7.08\% & 0.8212 & \wrongDef{12.43\%} & \wrongDef{0.7785} \\
+                      & IACA 2.3 & \wrongDef{13.94\%} & \wrongDef{0.7739} & 11.54\% & 0.8271 \\
+                      & OSACA & \wrongDef{36.23\%} & \wrongDef{0.4884} & 24.88\% & 0.5846 \\
+                      & llvm-mca-10 & \wrongDef{22.79\%} & \wrongDef{0.7656} & 20.76\% & 0.8154 \\
+                      & llvm-mca-8 & \wrongDef{22.93\%} & \wrongDef{0.7622} & 20.76\% & 0.8138 \\
+                      & DiffTune & 26.21\% & 0.6470 & 82.94\% & 0.7516 \\
+                      & CQA & & & 4.05\% & 0.9174 \\
+                      & \emph{Measured (orig.)} & 2.53\% & 0.9139 \\
+                      & Baseline & 18.81\% & 0.7243 & 14.47\% & 0.7670\\
+\midrule
+\multirow{6}{*}{SNB}  & \uiCA & 1.91\% & 0.9613 & 0.98\% & 0.9650 \\
+                      & IACA 2.3 & \wrongDef{11.91\%} & \wrongDef{0.8194} & 9.95\% & 0.8482 \\
+                      & OSACA & \wrongDef{36.85\%} & \wrongDef{0.5311} & 24.75\% & 0.5659 \\
+                      & llvm-mca-10 & \wrongDef{22.67\%} & \wrongDef{0.8069} & 18.34\% & 0.8455 \\
+                      & CQA & & & 4.08\% & 0.9238 \\
+                      & Baseline & 20.28\% & 0.7517 & 15.56\% & 0.7577\\
+\bottomrule
+\end{tabular}}
+\end{center}
+\end{table}
+
+\begin{table*}
+\caption{Influence of the simulation of different microarchitectural components on the prediction accuracy}
+\begin{tabular}{llrcrc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{\bhiveu}} & \multicolumn{2}{c}{\textbf{\bhivel}}\\  \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\textbf{{$\mu$}Arch} & \textbf{Predictor} & \textbf{MAPE} & \textbf{Kendall} & \textbf{MAPE} & \textbf{Kendall}\\
+\midrule
+\multirow{7}{*}{CLX (all benchmarks)} & \uiCA & 0.45\% & 0.9713 & 0.65\% & 0.9825 \\
+                      & \uiCA with simple front end & 8.57\% & 0.8602 & 6.23\% & 0.9048\\
+                      & \uiCA with simple port assignment & 2.37\% & 0.9280 & 12.20\% & 0.8613\\
+                      & \uiCA without micro fusion & 8.77\% & 0.8683 & 3.31\% & 0.9545\\
+                      & \uiCA without macro fusion & 0.48\% & 0.9699 & 8.84\% & 0.8863\\
+                      & \uiCA without LSD unrolling & 0.45\% & 0.9713 & 6.72\% & 0.9246\\
+                      & Baseline & 15.49\% & 0.7461 & 10.31\% & 0.8021\\
+\midrule
+\multirow{4}{*}{CLX (benchmarks with moves)} & \uiCA & 0.44\% & 0.9801 & 0.45\% & 0.9836 \\
+                      & \uiCA without move elimination & 1.79\% & 0.9654 & 1.74\% & 0.9615\\
+                      & \uiCA with full move elimination & 0.52\% & 0.9793 & 0.48\% & 0.9846\\
+                      & Baseline & 12.99\% & 0.8352 & 9.77\% & 0.8636\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\clearpage
+\appendix
+
+\section{Heatmaps for Ice Lake}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_mca.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}
+\end{figure}
+\vfill
+
+\newpage
+\mbox{}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_mca.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_cqa.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}
+\end{figure}
+\vfill
+
+\section{Heatmaps for Skylake}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_ith.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_iaca3.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_iaca23.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_mca.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_difftune.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Skylake}
+\end{figure}
+\vfill
+
+\newpage
+\mbox{}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_ith.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_iaca3.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_iaca23.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_mca.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_difftune.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_cqa.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Skylake}
+\end{figure}
+\vfill
+
+\newpage
+\section{Heatmaps for Haswell}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_ith.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_iaca3.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_iaca23.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_mca.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_difftune.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Haswell}
+\end{figure}
+\vfill
+
+\newpage
+\mbox{}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_ith.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_iaca3.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_iaca23.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_mca.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_difftune.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_cqa.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Haswell}
+\end{figure}
+\vfill
+
+\newpage
+\section{Heatmaps for Ivy Bridge}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_ith.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_iaca23.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_mca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_difftune.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ivy Bridge}
+\end{figure}
+\vfill
+
+\newpage
+\mbox{}
+\vfill
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_uiCA.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_ith.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_iaca23.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_osaca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_mca.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_difftune.pgf}}\end{subfigure}\par\bigskip
+
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_cqa.pgf}}\end{subfigure}~
+\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_baseline.pgf}}\end{subfigure}
+\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ivy Bridge}
+\end{figure}
+\vfill
+
+\end{document}

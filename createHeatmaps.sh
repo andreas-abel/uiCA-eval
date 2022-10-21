@@ -16,6 +16,49 @@ createHeatmapLoop() {
 rm -rf heatmaps/
 mkdir heatmaps
 
+# ICL
+
+createHeatmap icl '4 5' 'heatmaps/hm_icl_unroll_uiCA.pgf' 'uiCA'
+createHeatmap icl '4 3' 'heatmaps/hm_icl_unroll_osaca.pgf' 'OSACA'
+createHeatmap icl '4 2' 'heatmaps/hm_icl_unroll_mca.pgf' 'llvm-mca-10'
+createHeatmap icl '4 -baselineUnroll -memWritePorts 2' 'heatmaps/hm_icl_unroll_baseline.pgf' 'Baseline'
+
+echo "\section{Heatmaps for Ice Lake}"
+echo "\vfill"
+echo "\begin{figure}[H]"
+echo "\centering"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_uiCA.pgf}}\end{subfigure}~"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_osaca.pgf}}\end{subfigure}~"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_mca.pgf}}\end{subfigure}\par\bigskip"
+echo ""
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_baseline.pgf}}\end{subfigure}"
+echo "\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}"
+echo "\end{figure}"
+echo "\vfill"
+echo ""
+
+createHeatmapLoop icl '8 9' 'heatmaps/hm_icl_loop_uiCA.pgf' 'uiCA'
+createHeatmapLoop icl '8 6' 'heatmaps/hm_icl_loop_osaca.pgf' 'OSACA'
+createHeatmapLoop icl '8 5' 'heatmaps/hm_icl_loop_mca.pgf' 'llvm-mca-10'
+createHeatmapLoop icl '8 7' 'heatmaps/hm_icl_loop_cqa.pgf' 'CQA'
+createHeatmapLoop icl '8 -baselineLoop -issueWidth 5 -memWritePorts 2' 'heatmaps/hm_icl_loop_baseline.pgf' 'Baseline'
+
+echo "\newpage"
+echo "\mbox{}"
+echo "\vfill"
+echo "\begin{figure}[H]"
+echo "\centering"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_uiCA.pgf}}\end{subfigure}~"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_osaca.pgf}}\end{subfigure}~"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_mca.pgf}}\end{subfigure}\par\bigskip"
+echo ""
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_cqa.pgf}}\end{subfigure}~"
+echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_baseline.pgf}}\end{subfigure}"
+echo "\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}"
+echo "\end{figure}"
+echo "\vfill"
+echo ""
+
 # SKL
 
 createHeatmap skl '11 12' 'heatmaps/hm_skl_unroll_uiCA.pgf' 'uiCA'
@@ -27,6 +70,8 @@ createHeatmap skl '11 5' 'heatmaps/hm_skl_unroll_mca.pgf' 'llvm-mca-10'
 createHeatmap skl '11 10' 'heatmaps/hm_skl_unroll_difftune.pgf' 'DiffTune'
 createHeatmap skl '11 -baselineUnroll' 'heatmaps/hm_skl_unroll_baseline.pgf' 'Baseline'
 
+echo "\section{Heatmaps for Skylake}"
+echo "\vfill"
 echo "\begin{figure}[H]"
 echo "\centering"
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_uiCA.pgf}}\end{subfigure}~"
@@ -41,6 +86,7 @@ echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heat
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_baseline.pgf}}\end{subfigure}"
 echo "\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Skylake}"
 echo "\end{figure}"
+echo "\vfill"
 echo ""
 
 createHeatmapLoop skl '14 15' 'heatmaps/hm_skl_loop_uiCA.pgf' 'uiCA'
@@ -53,6 +99,9 @@ createHeatmapLoop skl '14 12' 'heatmaps/hm_skl_loop_difftune.pgf' 'DiffTune'
 createHeatmapLoop skl '14 13' 'heatmaps/hm_skl_loop_cqa.pgf' 'CQA'
 createHeatmapLoop skl '14 -baselineLoop -issueWidth 4' 'heatmaps/hm_skl_loop_baseline.pgf' 'Baseline'
 
+echo "\newpage"
+echo "\mbox{}"
+echo "\vfill"
 echo "\begin{figure}[H]"
 echo "\centering"
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_uiCA.pgf}}\end{subfigure}~"
@@ -68,43 +117,10 @@ echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heat
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_baseline.pgf}}\end{subfigure}"
 echo "\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Skylake}"
 echo "\end{figure}"
+echo "\vfill"
 echo ""
 
-# ICL
 
-createHeatmap icl '4 5' 'heatmaps/hm_icl_unroll_uiCA.pgf' 'uiCA'
-createHeatmap icl '4 3' 'heatmaps/hm_icl_unroll_osaca.pgf' 'OSACA'
-createHeatmap icl '4 2' 'heatmaps/hm_icl_unroll_mca.pgf' 'llvm-mca-10'
-createHeatmap icl '4 -baselineUnroll -memWritePorts 2' 'heatmaps/hm_icl_unroll_baseline.pgf' 'Baseline'
-
-echo "\begin{figure}[H]"
-echo "\centering"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_uiCA.pgf}}\end{subfigure}~"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_osaca.pgf}}\end{subfigure}~"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_mca.pgf}}\end{subfigure}\par\bigskip"
-echo ""
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_baseline.pgf}}\end{subfigure}"
-echo "\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}"
-echo "\end{figure}"
-echo ""
-
-createHeatmapLoop icl '8 9' 'heatmaps/hm_icl_loop_uiCA.pgf' 'uiCA'
-createHeatmapLoop icl '8 6' 'heatmaps/hm_icl_loop_osaca.pgf' 'OSACA'
-createHeatmapLoop icl '8 5' 'heatmaps/hm_icl_loop_mca.pgf' 'llvm-mca-10'
-createHeatmapLoop icl '8 7' 'heatmaps/hm_icl_loop_cqa.pgf' 'CQA'
-createHeatmapLoop icl '8 -baselineLoop -issueWidth 5 -memWritePorts 2' 'heatmaps/hm_icl_loop_baseline.pgf' 'Baseline'
-
-echo "\begin{figure}[H]"
-echo "\centering"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_uiCA.pgf}}\end{subfigure}~"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_osaca.pgf}}\end{subfigure}~"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_mca.pgf}}\end{subfigure}\par\bigskip"
-echo ""
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_cqa.pgf}}\end{subfigure}~"
-echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_baseline.pgf}}\end{subfigure}"
-echo "\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}"
-echo "\end{figure}"
-echo ""
 
 # HSW
 
@@ -117,6 +133,9 @@ createHeatmap hsw '11 5' 'heatmaps/hm_hsw_unroll_mca.pgf' 'llvm-mca-10'
 createHeatmap hsw '11 10' 'heatmaps/hm_hsw_unroll_difftune.pgf' 'DiffTune'
 createHeatmap hsw '11 -baselineUnroll' 'heatmaps/hm_hsw_unroll_baseline.pgf' 'Baseline'
 
+echo "\newpage"
+echo "\section{Heatmaps for Haswell}"
+echo "\vfill"
 echo "\begin{figure}[H]"
 echo "\centering"
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_uiCA.pgf}}\end{subfigure}~"
@@ -131,6 +150,7 @@ echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heat
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_baseline.pgf}}\end{subfigure}"
 echo "\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Haswell}"
 echo "\end{figure}"
+echo "\vfill"
 echo ""
 
 createHeatmapLoop hsw '14 15' 'heatmaps/hm_hsw_loop_uiCA.pgf' 'uiCA'
@@ -143,6 +163,9 @@ createHeatmapLoop hsw '14 12' 'heatmaps/hm_hsw_loop_difftune.pgf' 'DiffTune'
 createHeatmapLoop hsw '14 13' 'heatmaps/hm_hsw_loop_cqa.pgf' 'CQA'
 createHeatmapLoop hsw '14 -baselineLoop -issueWidth 4' 'heatmaps/hm_hsw_loop_baseline.pgf' 'Baseline'
 
+echo "\newpage"
+echo "\mbox{}"
+echo "\vfill"
 echo "\begin{figure}[H]"
 echo "\centering"
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_uiCA.pgf}}\end{subfigure}~"
@@ -158,6 +181,7 @@ echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heat
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_baseline.pgf}}\end{subfigure}"
 echo "\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Haswell}"
 echo "\end{figure}"
+echo "\vfill"
 echo ""
 
 
@@ -171,6 +195,9 @@ createHeatmap ivb '10 4' 'heatmaps/hm_ivb_unroll_mca.pgf' 'llvm-mca-10'
 createHeatmap ivb '10 9' 'heatmaps/hm_ivb_unroll_difftune.pgf' 'DiffTune'
 createHeatmap ivb '10 -baselineUnroll' 'heatmaps/hm_ivb_unroll_baseline.pgf' 'Baseline'
 
+echo "\newpage"
+echo "\section{Heatmaps for Ivy Bridge}"
+echo "\vfill"
 echo "\begin{figure}[H]"
 echo "\centering"
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_uiCA.pgf}}\end{subfigure}~"
@@ -184,6 +211,7 @@ echo ""
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_baseline.pgf}}\end{subfigure}"
 echo "\caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ivy Bridge}"
 echo "\end{figure}"
+echo "\vfill"
 echo ""
 
 createHeatmapLoop ivb '13 14' 'heatmaps/hm_ivb_loop_uiCA.pgf' 'uiCA'
@@ -195,6 +223,9 @@ createHeatmapLoop ivb '13 11' 'heatmaps/hm_ivb_loop_difftune.pgf' 'DiffTune'
 createHeatmapLoop ivb '13 12' 'heatmaps/hm_ivb_loop_cqa.pgf' 'CQA'
 createHeatmapLoop ivb '13 -baselineLoop -issueWidth 4' 'heatmaps/hm_ivb_loop_baseline.pgf' 'Baseline'
 
+echo "\newpage"
+echo "\mbox{}"
+echo "\vfill"
 echo "\begin{figure}[H]"
 echo "\centering"
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_uiCA.pgf}}\end{subfigure}~"
@@ -209,4 +240,5 @@ echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heat
 echo "\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_baseline.pgf}}\end{subfigure}"
 echo "\caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ivy Bridge}"
 echo "\end{figure}"
+echo "\vfill"
 echo ""

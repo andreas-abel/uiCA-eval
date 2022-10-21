@@ -104,7 +104,7 @@ echo "                      & llvm-mca-10 & `getEntriesWrongDef ivb '10 4'` & `g
 echo "                      & llvm-mca-8 & `getEntriesWrongDef ivb '10 8'` & `getEntriesLoop ivb '13 10'` \\\\"
 echo "                      & DiffTune & `getEntries ivb '10 9'` & `getEntriesLoop ivb '13 11'` \\\\"
 echo "                      & CQA & & & `getEntriesLoop ivb '13 12'` \\\\"
-echo "                      & \emph{Measured~\\cite{Chen19}} & `getEntries ivb '11 2'` \\\\"
+echo "                      & \emph{Measured~\\cite{Chen19}} & `getEntries ivb '10 2'` \\\\"
 echo "                      & Baseline & `getEntries ivb '10 -baselineUnroll'` & `getEntriesLoop ivb '13 -baselineLoop -issueWidth 4'`\\\\"
 echo "\midrule"
 echo "\multirow{6}{*}{SNB}  & \uiCA & `getEntries snb '5 6'` & `getEntriesLoop snb '9 10'` \\\\"
