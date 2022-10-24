@@ -35,6 +35,8 @@ getEntriesLoopWrongDef() {
    echo "\wrongDef{${MAPE}\%} & \wrongDef{${kendall}}"
 }
 
+cqaVersion=`cat addCQAToCsvLoop.sh | sed -n -e 's/^.*intel64\.\(.*\)\/maqao.*/\1/p'`
+
 echo "\documentclass[sigconf,nonacm]{acmart}" > eval.tex
 echo "\usepackage{booktabs}" >> eval.tex
 echo "\usepackage{import}" >> eval.tex
@@ -65,14 +67,15 @@ echo "\midrule" >> eval.tex
 echo "\multirow{2}{*}{RKL}  & \uiCA & `getEntries rkl '2 3'` & `getEntriesLoop rkl '5 6'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries rkl '2 -baselineUnroll -memWritePorts 2'` & `getEntriesLoop rkl '5 -baselineLoop -issueWidth 5 -memWritePorts 2'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
-echo "\multirow{3}{*}{TGL}  & \uiCA & `getEntries tgl '3 4'` & `getEntriesLoop tgl '6 7'` \\\\" >> eval.tex
-echo "                      & llvm-mca-10 & `getEntriesWrongDef tgl '3 2'` & `getEntriesLoop tgl '6 5'`\\\\" >> eval.tex
-echo "                      & Baseline & `getEntries tgl '3 -baselineUnroll -memWritePorts 2'` & `getEntriesLoop tgl '6 -baselineLoop -issueWidth 5 -memWritePorts 2'`\\\\" >> eval.tex
+echo "\multirow{3}{*}{TGL}  & \uiCA & `getEntries tgl '3 4'` & `getEntriesLoop tgl '7 8'` \\\\" >> eval.tex
+echo "                      & llvm-mca-10 & `getEntriesWrongDef tgl '3 2'` & `getEntriesLoop tgl '7 5'`\\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop tgl '7 6'` \\\\" >> eval.tex
+echo "                      & Baseline & `getEntries tgl '3 -baselineUnroll -memWritePorts 2'` & `getEntriesLoop tgl '7 -baselineLoop -issueWidth 5 -memWritePorts 2'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
 echo "\multirow{5}{*}{ICL}  & \uiCA & `getEntries icl '4 5'` & `getEntriesLoop icl '8 9'` \\\\" >> eval.tex
 echo "                      & OSACA & `getEntriesWrongDef icl '4 3'` & `getEntriesLoop icl '8 6'` \\\\" >> eval.tex
 echo "                      & llvm-mca-10 & `getEntriesWrongDef icl '4 2'` & `getEntriesLoop icl '8 5'` \\\\" >> eval.tex
-echo "                      & CQA & & & `getEntriesLoop icl '8 7'` \\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop icl '8 7'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries icl '4 -baselineUnroll -memWritePorts 2'` & `getEntriesLoop icl '8 -baselineLoop -issueWidth 5 -memWritePorts 2'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
 echo "\multirow{4}{*}{CLX}  & \uiCA & `getEntries clx '4 5'` & `getEntriesLoop clx '7 8'` \\\\" >> eval.tex
@@ -88,7 +91,7 @@ echo "                      & OSACA & `getEntriesWrongDef skl '11 8'` & `getEntr
 echo "                      & llvm-mca-10 & `getEntriesWrongDef skl '11 5'` & `getEntriesLoop skl '14 7'` \\\\" >> eval.tex
 echo "                      & llvm-mca-8 & `getEntriesWrongDef skl '11 9'` & `getEntriesLoop skl '14 11'` \\\\" >> eval.tex
 echo "                      & DiffTune & `getEntries skl '11 10'` & `getEntriesLoop skl '14 12'` \\\\" >> eval.tex
-echo "                      & CQA & & & `getEntriesLoop skl '14 13'` \\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop skl '14 13'` \\\\" >> eval.tex
 echo "                      & \emph{Measured (orig.)} & `getEntries skl '11 2'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries skl '11 -baselineUnroll'` & `getEntriesLoop skl '14 -baselineLoop -issueWidth 4'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
@@ -97,7 +100,7 @@ echo "                      & IACA 3.0 & `getEntriesWrongDef bdw '6 2'` & `getEn
 echo "                      & IACA 2.3 & `getEntriesWrongDef bdw '6 3'` & `getEntriesLoop bdw '10 6'` \\\\" >> eval.tex
 echo "                      & OSACA & `getEntriesWrongDef bdw '6 5'` & `getEntriesLoop bdw '10 8'` \\\\" >> eval.tex
 echo "                      & llvm-mca-10 & `getEntriesWrongDef bdw '6 4'` & `getEntriesLoop bdw '10 7'` \\\\" >> eval.tex
-echo "                      & CQA & & & `getEntriesLoop bdw '10 9'` \\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop bdw '10 9'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries bdw '6 -baselineUnroll'` & `getEntriesLoop bdw '10 -baselineLoop -issueWidth 4'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
 echo "\multirow{11}{*}{HSW} & \uiCA & `getEntries hsw '11 12'` & `getEntriesLoop hsw '14 15'` \\\\ " >> eval.tex
@@ -108,7 +111,7 @@ echo "                      & OSACA & `getEntriesWrongDef hsw '11 8'` & `getEntr
 echo "                      & llvm-mca-10 & `getEntriesWrongDef hsw '11 5'` & `getEntriesLoop hsw '14 7'` \\\\" >> eval.tex
 echo "                      & llvm-mca-8 & `getEntriesWrongDef hsw '11 9'` & `getEntriesLoop hsw '14 11'` \\\\" >> eval.tex
 echo "                      & DiffTune & `getEntries hsw '11 10'` & `getEntriesLoop hsw '14 12'` \\\\" >> eval.tex
-echo "                      & CQA & & & `getEntriesLoop hsw '14 13'` \\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop hsw '14 13'` \\\\" >> eval.tex
 echo "                      & \emph{Measured (orig.)} & `getEntries hsw '11 2'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries hsw '11 -baselineUnroll'` & `getEntriesLoop hsw '14 -baselineLoop -issueWidth 4'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
@@ -119,7 +122,7 @@ echo "                      & OSACA & `getEntriesWrongDef ivb '10 7'` & `getEntr
 echo "                      & llvm-mca-10 & `getEntriesWrongDef ivb '10 4'` & `getEntriesLoop ivb '13 6'` \\\\" >> eval.tex
 echo "                      & llvm-mca-8 & `getEntriesWrongDef ivb '10 8'` & `getEntriesLoop ivb '13 10'` \\\\" >> eval.tex
 echo "                      & DiffTune & `getEntries ivb '10 9'` & `getEntriesLoop ivb '13 11'` \\\\" >> eval.tex
-echo "                      & CQA & & & `getEntriesLoop ivb '13 12'` \\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop ivb '13 12'` \\\\" >> eval.tex
 echo "                      & \emph{Measured (orig.)} & `getEntries ivb '10 2'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries ivb '10 -baselineUnroll'` & `getEntriesLoop ivb '13 -baselineLoop -issueWidth 4'`\\\\" >> eval.tex
 echo "\midrule" >> eval.tex
@@ -127,7 +130,7 @@ echo "\multirow{6}{*}{SNB}  & \uiCA & `getEntries snb '5 6'` & `getEntriesLoop s
 echo "                      & IACA 2.3 & `getEntriesWrongDef snb '5 2'` & `getEntriesLoop snb '9 5'` \\\\" >> eval.tex
 echo "                      & OSACA & `getEntriesWrongDef snb '5 4'` & `getEntriesLoop snb '9 7'` \\\\" >> eval.tex
 echo "                      & llvm-mca-10 & `getEntriesWrongDef snb '5 3'` & `getEntriesLoop snb '9 6'` \\\\" >> eval.tex
-echo "                      & CQA & & & `getEntriesLoop snb '9 8'` \\\\" >> eval.tex
+echo "                      & CQA ${cqaVersion} & & & `getEntriesLoop snb '9 8'` \\\\" >> eval.tex
 echo "                      & Baseline & `getEntries snb '5 -baselineUnroll'` & `getEntriesLoop snb '9 -baselineLoop -issueWidth 4'`\\\\" >> eval.tex
 echo "\bottomrule" >> eval.tex
 echo "\end{tabular}}" >> eval.tex
