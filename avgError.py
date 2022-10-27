@@ -85,6 +85,25 @@ def getError(measurement, prediction):
    error = sum(diff)/len(diff)
    return error
 
+def getBaselineForUnrolling(hex, xedDisas, nMemWritePorts):
+   nInstr = len(xedDisas)
+   memR, memW = getNumberOfMemOps(xedDisas)
+   #lat = getMaxLat(disas)
+   preDec = (len(hex)/2) / 16
+   misc = 0
+   #misc = max(misc, getNumberOfLCP(disas) * 3.2)
+   #misc = max(misc, l.count('lea')/2)
+   return max(nInstr/4, memR/2, memW/nMemWritePorts) #, lat, preDec, misc))
+
+def getBaselineForLoop(xedDisas, nMemWritePorts, issueWidth):
+   nInstr = len(xedDisas) - 1 # omit one bec. of macro fusion
+   memR, memW = getNumberOfMemOps(xedDisas)
+   #lat = getMaxLat(disas)
+   misc = 0
+   #misc = max(misc, l.count('lea')/2)
+   return max(1, nInstr/issueWidth, memR/2, memW/nMemWritePorts) #, lat, misc))
+
+
 def main():
    parser = argparse.ArgumentParser(description='AvgError')
    parser.add_argument('csv', help="csv file")
@@ -137,41 +156,19 @@ def main():
             allBenchmarksForSource.update(l.split(',')[0] for l in f.read().splitlines())
       lines = [l for l in lines if l.split(',')[0] in allBenchmarksForSource]
 
-   #lines = [l for l in lines if not 'fail' in l]
-
    tp1L = getColumn(lines, args.col1, args.CPI)
 
    tp2L = []
    if args.baselineUnroll:
-      for i, l in enumerate(lines):
+      for l in lines:
          hex = l.split(',')[0]
-         nInstr = l.count(';') + 1
          disas = xed.disasHex(hex, chip='TIGER_LAKE')
-         memR, memW = getNumberOfMemOps(disas)
-         #lat = getMaxLat(disas)
-         preDec = (len(hex)/2) / 16
-
-         misc = 0
-         #misc = max(misc, getNumberOfLCP(disas) * 3.2)
-         #misc = max(misc, l.count('lea')/2)
-         tp2L.append(100 * max(nInstr/4, memR/2, memW/args.memWritePorts)) #, lat, preDec, misc))
-
-         #if tp2L[-1] * .98 > tp1L[i]:
-         #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
-
+         tp2L.append(100 * getBaselineForUnrolling(hex, disas, args.memWritePorts))
    elif args.baselineLoop:
-      for i, l in enumerate(lines):
+      for l in lines:
          hex = l.split(',')[0] + l.split(',')[1] + l.split(',')[2]
-         nInstr = l.count(';') # omit one bec. of macro fusion
          disas = xed.disasHex(hex, chip='TIGER_LAKE')
-         memR, memW = getNumberOfMemOps(disas)
-         #lat = getMaxLat(disas)
-         misc = 0
-         #misc = max(misc, l.count('lea')/2)
-         tp2L.append(100 * max(1, nInstr/args.issueWidth, memR/2, memW/args.memWritePorts)) #, lat, misc))
-
-         #if tp2L[-1] * .98 > tp1L[i]:
-         #   print(str(i) + ': '+ l + ' - ' + str(tp2L[-1]))
+         tp2L.append(100 * getBaselineForLoop(disas, args.memWritePorts, args.issueWidth))
    else:
       tp2L = getColumn(lines, args.col2, args.CPI)
 
