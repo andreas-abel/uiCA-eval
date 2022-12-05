@@ -2,14 +2,18 @@
 
 import argparse
 import csv
+import importlib
+import numpy as np
 import os
 import sys
-import numpy as np
 import scipy.stats
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../uiCA'))
 import xed
 from x64_lib import *
+from uiCA import getInstructions, adjustLatenciesAndAddMergeUops
+from microArchConfigs import MicroArchConfigs
+from analyticalPredictor import *
 
 
 def getNumberOfMemOps(disas):
@@ -120,6 +124,11 @@ def main():
    parser.add_argument('-CPI', type=int, help='normalize TP to CPI; the parameter must contain the column index for the assembler code')
    parser.add_argument('-category', nargs=2, help='only consider the specified category; 1st arg: csv file, 2nd arg: category')
    parser.add_argument('-source', nargs=2, help='only consider the specified source; 1st arg: sources folder, 2nd arg: source application')
+   parser.add_argument('-arch', help='Microarchitecture', default='SKL')
+   parser.add_argument('-analyticalUnroll', action='store_true')
+   parser.add_argument('-analyticalLoop', action='store_true')
+   parser.add_argument('-analyticalComponents', default='predec,dec,dsb,lsd,issue,portUsage,lat')
+   parser.add_argument('-bottlenecks', action='store_true') # can only be used together with -analytical*
    args = parser.parse_args()
 
    with open(args.csv, 'r') as f:
@@ -156,30 +165,67 @@ def main():
             allBenchmarksForSource.update(l.split(',')[0] for l in f.read().splitlines())
       lines = [l for l in lines if l.split(',')[0] in allBenchmarksForSource]
 
-   tp1L = getColumn(lines, args.col1, args.CPI)
+   uArchConfig = None
+   archData = None
+   bottlenecks = {}
+   if args.analyticalUnroll or args.analyticalLoop:
+      uArchConfig = MicroArchConfigs[args.arch]
+      archData = importlib.import_module('instrData.'+uArchConfig.name+'_data')
 
+   tp1L = getColumn(lines, args.col1, args.CPI)
    tp2L = []
-   if args.baselineUnroll:
+
+   if args.baselineUnroll or args.analyticalUnroll:
       for l in lines:
          hex = l.split(',')[0]
          disas = xed.disasHex(hex, chip='TIGER_LAKE')
-         tp2L.append(100 * getBaselineForUnrolling(hex, disas, args.memWritePorts))
-   elif args.baselineLoop:
+         if args.baselineUnroll:
+            tp2L.append(100 * getBaselineForUnrolling(hex, disas, args.memWritePorts))
+         elif args.analyticalUnroll:
+            instructions = getInstructions(disas, uArchConfig, archData, 0)
+            #adjustLatenciesAndAddMergeUops(instructions, uArchConfig)
+
+            TPs = getAnalyticalPredictionForUnrolling(instructions, hex, disas, uArchConfig, args.analyticalComponents.split(','))
+
+            TP = max(v for _, v in TPs)
+            tp2L.append(round(100 * TP))
+
+            if args.bottlenecks:
+               key = frozenset(n for n, v in TPs if .99 < (v/TP) < 1.01)
+               bottlenecks[key] = bottlenecks.get(key, 0) + 1
+   elif args.baselineLoop or args.analyticalLoop:
       for l in lines:
          hex = l.split(',')[0] + l.split(',')[1] + l.split(',')[2]
          disas = xed.disasHex(hex, chip='TIGER_LAKE')
-         tp2L.append(100 * getBaselineForLoop(disas, args.memWritePorts, args.issueWidth))
+         if args.baselineLoop:
+            tp2L.append(100 * getBaselineForLoop(disas, args.memWritePorts, args.issueWidth))
+         elif args.analyticalLoop:
+            instructions = getInstructions(disas, uArchConfig, archData, 0)
+            #adjustLatenciesAndAddMergeUops(instructions, uArchConfig)
+
+            TPs = getAnalyticalPredictionForLoop(instructions, hex, disas, uArchConfig, args.analyticalComponents.split(','))
+
+            TP = max(v for _, v in TPs)
+            tp2L.append(round(100 * TP))
+
+            if args.bottlenecks:
+               key = frozenset(n for n, v in TPs if .99 < (v/TP) < 1.01)
+               bottlenecks[key] = bottlenecks.get(key, 0) + 1
    else:
       tp2L = getColumn(lines, args.col2, args.CPI)
+
+   if args.bottlenecks:
+      for n, v in sorted(bottlenecks.items(), key=lambda x: -x[1]):
+         print('{' + ', '.join(n) + '}: ' + str(round(100 * v/len(lines), 2)) + '%')
 
    if not args.heatmap:
       if args.showDiff:
          for tp1, tp2, l in zip(tp1L, tp2L, lines):
             #if not (tp1>0 and tp2>0): continue
             #if tp1 != tp2:
-            if abs(tp1-tp2)/tp1 > .1:
+            #if abs(tp1-tp2)/tp1 > .1:
             #if abs(tp1-tp2) > 1:
-            #if tp1 < 0.98 * tp2:
+            if tp1 < 0.95 * tp2:
                print(l + ' - ' + str(tp1) + ',' + str(tp2))
 
       if 'count' in args.metrics:
@@ -199,9 +245,9 @@ def main():
       if 'pearson' in args.metrics:
          pearson = scipy.stats.pearsonr(tp1L, tp2L)
          if args.round:
-            print('Person: {:.4f}'.format(pearson[0]))
+            print('Pearson: {:.4f}'.format(pearson[0]))
          else:
-            print('Person: {}'.format(pearson[0]))
+            print('Pearson: {}'.format(pearson[0]))
       if 'spearman' in args.metrics:
          spearman = scipy.stats.spearmanr(tp1L, tp2L)
          if args.round:
