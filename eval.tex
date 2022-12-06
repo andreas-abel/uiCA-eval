@@ -23,27 +23,31 @@
 & & \multicolumn{2}{c}{\textbf{\bhiveu}} & \multicolumn{2}{c}{\textbf{\bhivel}}\\  \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 \textbf{{$\mu$}Arch}  & \textbf{Predictor} & \textbf{MAPE} & \textbf{Kendall} & \textbf{MAPE} & \textbf{Kendall} \\
 \midrule
-\multirow{2}{*}{RKL}  & \uiCA & 0.49\% & 0.9835 & 0.92\% & 0.9755 \\
+\multirow{4}{*}{RKL}  & \uiCA & 0.49\% & 0.9835 & 0.92\% & 0.9755 \\
                       & CQA 2.16.0 & & & 5.69\% & 0.9123 \\
                       & Baseline & 15.50\% & 0.7397 & 9.26\% & 0.7808\\
+                      & Analytical & 0.42\% & 0.9860 & 1.04\% & 0.9731\\
 \midrule
-\multirow{3}{*}{TGL}  & \uiCA & 0.97\% & 0.9769 & 0.98\% & 0.9731 \\
+\multirow{5}{*}{TGL}  & \uiCA & 0.97\% & 0.9769 & 0.98\% & 0.9731 \\
                       & llvm-mca-10 & \wrongDef{25.74\%} & \wrongDef{0.7049} & 13.80\% & 0.8486\\
                       & CQA 2.16.0 & & & 5.44\% & 0.9139 \\
                       & Baseline & 17.49\% & 0.7245 & 11.25\% & 0.7413\\
+                      & Analytical & 1.15\% & 0.9717 & 1.62\% & 0.9617\\
 \midrule
-\multirow{5}{*}{ICL}  & \uiCA & 1.00\% & 0.9771 & 0.77\% & 0.9759 \\
+\multirow{6}{*}{ICL}  & \uiCA & 1.00\% & 0.9771 & 0.77\% & 0.9759 \\
                       & OSACA & \wrongDef{53.80\%} & \wrongDef{0.3143} & 21.98\% & 0.4698 \\
                       & llvm-mca-10 & \wrongDef{25.38\%} & \wrongDef{0.7030} & 13.64\% & 0.8512 \\
                       & CQA 2.16.0 & & & 5.03\% & 0.9256 \\
                       & Baseline & 17.54\% & 0.7230 & 10.84\% & 0.7510\\
+                      & Analytical & 1.17\% & 0.9713 & 1.36\% & 0.9681\\
 \midrule
-\multirow{4}{*}{CLX}  & \uiCA & 0.45\% & 0.9713 & 0.65\% & 0.9825 \\
+\multirow{5}{*}{CLX}  & \uiCA & 0.45\% & 0.9713 & 0.65\% & 0.9825 \\
                       & llvm-mca-10 & \wrongDef{23.17\%} & \wrongDef{0.7211} & 13.21\% & 0.8060 \\
                       & OSACA & \wrongDef{20.83\%} & \wrongDef{0.7511} & 11.61\% & 0.8068 \\
                       & Baseline & 15.49\% & 0.7461 & 10.31\% & 0.8021\\
+                      & Analytical & 0.62\% & 0.9692 & 1.24\% & 0.9720\\
 \midrule
-\multirow{11}{*}{SKL} & \uiCA & 0.45\% & 0.9798 & 0.38\% & 0.9895 \\
+\multirow{12}{*}{SKL} & \uiCA & 0.45\% & 0.9798 & 0.38\% & 0.9895 \\
                       & Ithemal & 8.28\% & 0.8172 & \wrongDef{13.66\%} & \wrongDef{0.7582} \\
                       & IACA 3.0 & \wrongDef{13.49\%} & \wrongDef{0.7802} & 14.26\% & 0.8290 \\
                       & IACA 2.3 & \wrongDef{11.85\%} & \wrongDef{0.8071} & 8.42\% & 0.8477 \\
@@ -54,16 +58,18 @@
                       & CQA 2.16.0 & & & 6.58\% & 0.8972 \\
                       & \emph{Measured (orig.)} & 4.40\% & 0.9113 \\
                       & Baseline & 17.28\% & 0.7228 & 10.03\% & 0.7999\\
+                      & Analytical & 0.69\% & 0.9753 & 1.08\% & 0.9753\\
 \midrule
-\multirow{7}{*}{BDW}  & \uiCA & 1.08\% & 0.9805 & 0.60\% & 0.9841 \\ 
+\multirow{8}{*}{BDW}  & \uiCA & 1.08\% & 0.9805 & 0.60\% & 0.9841 \\
                       & IACA 3.0 & \wrongDef{14.69\%} & \wrongDef{0.8012} & 11.47\% & 0.8725 \\
                       & IACA 2.3 & \wrongDef{13.22\%} & \wrongDef{0.8206} & 5.84\% & 0.8928 \\
                       & OSACA & \wrongDef{17.52\%} & \wrongDef{0.7456} & 9.69\% & 0.8365 \\
                       & llvm-mca-10 & \wrongDef{14.23\%} & \wrongDef{0.7793} & 16.71\% & 0.8286 \\
                       & CQA 2.16.0 & & & 5.00\% & 0.9222 \\
                       & Baseline & 16.97\% & 0.7572 & 7.44\% & 0.8332\\
+                      & Analytical & 0.73\% & 0.9852 & 1.44\% & 0.9704\\
 \midrule
-\multirow{11}{*}{HSW} & \uiCA & 0.76\% & 0.9850 & 0.59\% & 0.9842 \\ 
+\multirow{12}{*}{HSW} & \uiCA & 0.76\% & 0.9850 & 0.59\% & 0.9842 \\
                       & Ithemal & 7.38\% & 0.8400 & \wrongDef{16.19\%} & \wrongDef{0.7700} \\
                       & IACA 3.0 & \wrongDef{15.04\%} & \wrongDef{0.8080} & 12.00\% & 0.8733 \\
                       & IACA 2.3 & \wrongDef{13.13\%} & \wrongDef{0.8291} & 5.79\% & 0.8925 \\
@@ -74,8 +80,9 @@
                       & CQA 2.16.0 & & & 5.05\% & 0.9229 \\
                       & \emph{Measured (orig.)} & 2.49\% & 0.9379 \\
                       & Baseline & 17.30\% & 0.7604 & 7.57\% & 0.8314\\
+                      & Analytical & 1.26\% & 0.9791 & 1.50\% & 0.9690\\
 \midrule
-\multirow{10}{*}{IVB} & \uiCA & 1.50\% & 0.9609 & 1.11\% & 0.9495 \\ 
+\multirow{11}{*}{IVB} & \uiCA & 1.50\% & 0.9609 & 1.11\% & 0.9495 \\
                       & Ithemal & 7.08\% & 0.8212 & \wrongDef{12.43\%} & \wrongDef{0.7785} \\
                       & IACA 2.3 & \wrongDef{13.94\%} & \wrongDef{0.7739} & 11.54\% & 0.8271 \\
                       & OSACA & \wrongDef{36.23\%} & \wrongDef{0.4884} & 24.88\% & 0.5846 \\
@@ -85,13 +92,15 @@
                       & CQA 2.16.0 & & & 4.05\% & 0.9174 \\
                       & \emph{Measured (orig.)} & 2.53\% & 0.9139 \\
                       & Baseline & 18.81\% & 0.7243 & 14.47\% & 0.7670\\
+                      & Analytical & 1.81\% & 0.9567 & 1.52\% & 0.9623\\
 \midrule
-\multirow{6}{*}{SNB}  & \uiCA & 1.91\% & 0.9613 & 0.98\% & 0.9650 \\
+\multirow{7}{*}{SNB}  & \uiCA & 1.91\% & 0.9613 & 0.98\% & 0.9650 \\
                       & IACA 2.3 & \wrongDef{11.91\%} & \wrongDef{0.8194} & 9.95\% & 0.8482 \\
                       & OSACA & \wrongDef{36.86\%} & \wrongDef{0.5311} & 24.75\% & 0.5659 \\
                       & llvm-mca-10 & \wrongDef{22.67\%} & \wrongDef{0.8069} & 18.34\% & 0.8455 \\
                       & CQA 2.16.0 & & & 4.07\% & 0.9238 \\
                       & Baseline & 20.28\% & 0.7517 & 15.56\% & 0.7577\\
+                      & Analytical & 1.95\% & 0.9586 & 1.34\% & 0.9742\\
 \bottomrule
 \end{tabular}}
 \end{center}
@@ -104,21 +113,94 @@
 & & \multicolumn{2}{c}{\textbf{\bhiveu}} & \multicolumn{2}{c}{\textbf{\bhivel}}\\  \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 \textbf{{$\mu$}Arch} & \textbf{Predictor} & \textbf{MAPE} & \textbf{Kendall} & \textbf{MAPE} & \textbf{Kendall}\\
 \midrule
-\multirow{7}{*}{CLX (all benchmarks)} & \uiCA & 0.45\% & 0.9713 & 0.65\% & 0.9825 \\
+\multirow{8}{*}{CLX (all benchmarks)} & \uiCA & 0.45\% & 0.9713 & 0.65\% & 0.9825 \\
                       & \uiCA with simple front end & 8.57\% & 0.8602 & 6.23\% & 0.9048\\
                       & \uiCA with simple port assignment & 2.37\% & 0.9280 & 12.20\% & 0.8613\\
                       & \uiCA without micro fusion & 8.77\% & 0.8683 & 3.31\% & 0.9545\\
                       & \uiCA without macro fusion & 0.48\% & 0.9699 & 8.84\% & 0.8863\\
                       & \uiCA without LSD unrolling & 0.45\% & 0.9713 & 6.72\% & 0.9246\\
                       & Baseline & 15.49\% & 0.7461 & 10.31\% & 0.8021\\
+                      & Analytical & 0.62\% & 0.9692 & 1.24\% & 0.9720\\
 \midrule
-\multirow{4}{*}{CLX (benchmarks with moves)} & \uiCA & 0.44\% & 0.9801 & 0.45\% & 0.9836 \\
+\multirow{5}{*}{CLX (benchmarks with moves)} & \uiCA & 0.44\% & 0.9801 & 0.45\% & 0.9836 \\
                       & \uiCA without move elimination & 1.79\% & 0.9654 & 1.74\% & 0.9615\\
                       & \uiCA with full move elimination & 0.52\% & 0.9793 & 0.48\% & 0.9846\\
                       & Baseline & 12.99\% & 0.8352 & 9.77\% & 0.8636\\
+                      & Analytical & 0.71\% & 0.9779 & 0.59\% & 0.9870\\
 \bottomrule
 \end{tabular}
 \end{table*}
+
+
+\begin{table}
+\caption{Influence of different components of the analytical formula on the prediction accuracy}
+\begin{center}
+\begin{tabular}{llrcrc}
+\toprule
+& & \multicolumn{2}{c}{\textbf{\bhiveu}} & \multicolumn{2}{c}{\textbf{\bhivel}}\\  \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\textbf{{$\mu$}Arch}  & \textbf{Predictor} & \textbf{MAPE} & \textbf{Kendall} & \textbf{MAPE} & \textbf{Kendall} \\
+\midrule
+\multirow{19}{*}{RKL} & Analytical & 0.42\% & 0.9860 & 1.04\% & 0.9731\\
+                      & simple predec  & 4.38\% & 0.9024 & & \\
+                      & simple dec  & 0.69\% & 0.9836 & & \\
+                      & only predec  & 14.84\% & 0.7291 & & \\
+                      & only dec  & 26.37\% & 0.6840 & & \\
+                      & only dsb  & & & 100.00\% & 0.0078\\
+                      & only lsd  & & & 24.26\% & 0.6505\\
+                      & only issue  & 41.45\% & 0.6774 & 29.85\% & 0.6520\\
+                      & only portUsage  & 29.18\% & 0.5122 & 26.40\% & 0.7132\\
+                      & only lat  & 88.56\% & 0.3589 & 22.55\% & 0.4428\\
+                      & only predec+portUsage  & 9.36\% & 0.8399 & & \\
+                      & only lat+portUsage  & 22.40\% & 0.6149 & 6.59\% & 0.8467\\
+                      & everything but predec  & 9.02\% & 0.8512 & & \\
+                      & everything but dec  & 1.19\% & 0.9734 & & \\
+                      & everything but dsb  & & & 1.04\% & 0.9731\\
+                      & everything but lsd  & & & 2.52\% & 0.9556\\
+                      & everything but issue  & 0.43\% & 0.9857 & 1.06\% & 0.9724\\
+                      & everything but portUsage  & 7.88\% & 0.8570 & 7.90\% & 0.8002\\
+                      & everything but lat  & 5.36\% & 0.8853 & 14.88\% & 0.7966\\
+\midrule
+\multirow{17}{*}{SKL} & Analytical & 0.69\% & 0.9753 & 1.08\% & 0.9753\\
+                      & simple predec  & 5.26\% & 0.8910 & 2.71\% & 0.9514\\
+                      & simple dec  & 0.92\% & 0.9733 & 1.10\% & 0.9751\\
+                      & only predec  & 20.66\% & 0.6642 & 90.60\% & 0.3659\\
+                      & only dec  & 32.59\% & 0.6599 & 92.75\% & 0.3629\\
+                      & only dsb  & & & 26.33\% & 0.2144\\
+                      & only issue  & 33.02\% & 0.6571 & 23.12\% & 0.7013\\
+                      & only portUsage  & 26.95\% & 0.5575 & 17.79\% & 0.6583\\
+                      & only lat  & 84.90\% & 0.3472 & 29.53\% & 0.3738\\
+                      & only predec+portUsage  & 13.78\% & 0.7894 & 23.85\% & 0.5306\\
+                      & only lat+portUsage  & 18.93\% & 0.6786 & 13.42\% & 0.7551\\
+                      & everything but predec  & 8.65\% & 0.8642 & 2.91\% & 0.9406\\
+                      & everything but dec  & 0.96\% & 0.9726 & 1.10\% & 0.9750\\
+                      & everything but dsb  & & & 2.70\% & 0.9629\\
+                      & everything but issue  & 0.76\% & 0.9736 & 4.34\% & 0.9110\\
+                      & everything but portUsage  & 12.24\% & 0.8028 & 6.01\% & 0.8471\\
+                      & everything but lat  & 6.77\% & 0.8427 & 4.62\% & 0.8823\\
+\midrule
+\multirow{19}{*}{SNB} & Analytical & 1.95\% & 0.9586 & 1.34\% & 0.9742\\
+                      & simple predec  & 3.59\% & 0.9292 & & \\
+                      & simple dec  & 3.76\% & 0.9378 & & \\
+                      & only predec  & 24.55\% & 0.6879 & & \\
+                      & only dec  & 26.60\% & 0.7119 & & \\
+                      & only dsb  & & & 99.98\% & 0.0488\\
+                      & only lsd  & & & 11.51\% & 0.7573\\
+                      & only issue  & 33.59\% & 0.7308 & 29.42\% & 0.7058\\
+                      & only portUsage  & 15.59\% & 0.7555 & 12.28\% & 0.7945\\
+                      & only lat  & 85.62\% & 0.3474 & 34.78\% & 0.3770\\
+                      & only predec+portUsage  & 18.59\% & 0.7806 & & \\
+                      & only lat+portUsage  & 10.49\% & 0.8383 & 8.58\% & 0.8854\\
+                      & everything but predec  & 5.50\% & 0.9058 & & \\
+                      & everything but dec  & 4.07\% & 0.9326 & & \\
+                      & everything but dsb  & & & 1.34\% & 0.9742\\
+                      & everything but lsd  & & & 6.45\% & 0.9119\\
+                      & everything but issue  & 1.97\% & 0.9582 & 1.35\% & 0.9736\\
+                      & everything but portUsage  & 13.48\% & 0.8153 & 7.73\% & 0.8482\\
+                      & everything but lat  & 6.24\% & 0.8714 & 4.73\% & 0.8857\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
 
 \clearpage
 \appendix
@@ -132,6 +214,7 @@
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_mca.pgf}}\end{subfigure}\par\bigskip
 
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_baseline.pgf}}\end{subfigure}
+~\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_unroll_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}
 \end{figure}
 \vfill
@@ -146,6 +229,7 @@
 
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_cqa.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_baseline.pgf}}\end{subfigure}
+~\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_icl_loop_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ice Lake}
 \end{figure}
 \vfill
@@ -164,6 +248,7 @@
 
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_difftune.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_baseline.pgf}}\end{subfigure}
+~\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_unroll_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Skylake}
 \end{figure}
 \vfill
@@ -183,6 +268,7 @@
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_difftune.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_cqa.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_baseline.pgf}}\end{subfigure}
+\par\bigskip\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_skl_loop_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Skylake}
 \end{figure}
 \vfill
@@ -202,6 +288,7 @@
 
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_difftune.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_baseline.pgf}}\end{subfigure}
+~\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_unroll_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Haswell}
 \end{figure}
 \vfill
@@ -221,6 +308,7 @@
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_difftune.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_cqa.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_baseline.pgf}}\end{subfigure}
+\par\bigskip\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_hsw_loop_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Haswell}
 \end{figure}
 \vfill
@@ -239,6 +327,7 @@
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_difftune.pgf}}\end{subfigure}\par\bigskip
 
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_baseline.pgf}}\end{subfigure}
+~\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_unroll_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhiveu for basic blocks with a measured throughput of less than 10 cycles/iteration on Ivy Bridge}
 \end{figure}
 \vfill
@@ -257,6 +346,7 @@
 
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_cqa.pgf}}\end{subfigure}~
 \begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_baseline.pgf}}\end{subfigure}
+~\begin{subfigure}[t]{0.33\textwidth}\resizebox{\textwidth}{!}{\import{heatmaps}{hm_ivb_loop_analytical.pgf}}\end{subfigure}
 \caption{Heatmaps for \bhivel for basic blocks with a measured throughput of less than 10 cycles/iteration on Ivy Bridge}
 \end{figure}
 \vfill

@@ -183,10 +183,8 @@ def main():
             tp2L.append(100 * getBaselineForUnrolling(hex, disas, args.memWritePorts))
          elif args.analyticalUnroll:
             instructions = getInstructions(disas, uArchConfig, archData, 0)
-            #adjustLatenciesAndAddMergeUops(instructions, uArchConfig)
 
             TPs = getAnalyticalPredictionForUnrolling(instructions, hex, disas, uArchConfig, args.analyticalComponents.split(','))
-
             TP = max(v for _, v in TPs)
             tp2L.append(round(100 * TP))
 
@@ -201,10 +199,8 @@ def main():
             tp2L.append(100 * getBaselineForLoop(disas, args.memWritePorts, args.issueWidth))
          elif args.analyticalLoop:
             instructions = getInstructions(disas, uArchConfig, archData, 0)
-            #adjustLatenciesAndAddMergeUops(instructions, uArchConfig)
 
             TPs = getAnalyticalPredictionForLoop(instructions, hex, disas, uArchConfig, args.analyticalComponents.split(','))
-
             TP = max(v for _, v in TPs)
             tp2L.append(round(100 * TP))
 
