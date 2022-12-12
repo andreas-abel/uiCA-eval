@@ -7,7 +7,7 @@ from itertools import count
 from typing import List
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../uiCA'))
-from uiCA import Instr, generateLatencyGraph, computeMaximumLatencyForGraph
+from uiCA import Instr, generateLatencyGraph, computeMaximumLatencyForGraph, computePortUsageLimit, computeIssueLimit
 from microArchConfigs import MicroArchConfig
 
 
@@ -42,7 +42,7 @@ def getPredecLimit(hex, disas, loop=False):
 
 def getPredecLimitSimple(hex, instructions):
    codeLength = len(hex) // 2
-   return  codeLength/16
+   return codeLength/16
 
 
 def hasLCP(instrD):
@@ -88,10 +88,6 @@ def getDecLimitSimple(instructions):
    return max(len(instructions)/4, len([i for i in instructions if i.complexDecoder]))
 
 
-def getIssueLimit(instructions: List['Instr'], uArchConfig: 'MicroArchConfig'):
-   return sum(i.retireSlots for i in instructions if not i.macroFusedWithPrevInstr)/uArchConfig.issueWidth
-
-
 def getLSDLimit(instructions, uArchConfig):
    nUops = sum(i.uopsMITE + i.uopsMS for i in instructions if not i.macroFusedWithPrevInstr)
    LSDUnrollCount = uArchConfig.LSDUnrolling.get(nUops, 1)
@@ -102,29 +98,10 @@ def getDSBLimit(hex, disas, instructions, uArchConfig):
    nUops = sum(i.uopsMITE + i.uopsMS  for i in instructions if not i.macroFusedWithPrevInstr)
    codeLength = sum(len(i.opcode) // 2 for i in instructions[:-1])
 
-   if codeLength < 32:
+   if codeLength <= 32:
       return math.ceil(nUops/6)
    else:
       return nUops/6
-
-
-def computePortUsage(instructions):
-   portUsage = {}
-   for instr in instructions:
-      if instr.mayBeEliminated or instr.macroFusedWithPrevInstr:
-         continue
-      for ports, nUops in instr.portData.items():
-         portUsage[frozenset(ports)] = portUsage.get(frozenset(ports), 0) + nUops
-
-   if not portUsage:
-      return 0
-
-   TP = 0
-   for pc in portUsage:
-      uops = sum(u for pc2, u in portUsage.items() if pc2.issubset(pc))
-      TP = max(TP, uops/len(pc))
-
-   return TP
 
 
 def getAnalyticalPredictionForUnrolling(instructions: List[Instr], hex, xedDisas, uArchConfig: MicroArchConfig, components: List[str]):
@@ -138,9 +115,9 @@ def getAnalyticalPredictionForUnrolling(instructions: List[Instr], hex, xedDisas
    if 'decSimple' in components:
       TPs.append(('decSimple', getDecLimitSimple(instructions)))
    if 'issue' in components:
-      TPs.append(('issue', getIssueLimit(instructions, uArchConfig)))
+      TPs.append(('issue', computeIssueLimit(instructions, uArchConfig)))
    if 'portUsage' in components:
-      TPs.append(('portUsage', computePortUsage(instructions)))
+      TPs.append(('portUsage', computePortUsageLimit(instructions)))
    if 'lat' in components:
       nodesForInstr, edgesForNode = generateLatencyGraph(instructions, uArchConfig, 'stack')
       lat = computeMaximumLatencyForGraph(instructions, nodesForInstr, edgesForNode)[0]
@@ -172,12 +149,12 @@ def getAnalyticalPredictionForLoop(instructions: List[Instr], hex, xedDisas, uAr
    if 'decSimple' in components:
       TPs.append(('decSimple', getDecLimitSimple(instructions) if (uopSource == 'MITE') else 0))
    if 'issue' in components:
-      TPs.append(('issue', getIssueLimit(instructions, uArchConfig)))
+      TPs.append(('issue', computeIssueLimit(instructions, uArchConfig)))
    if 'lat' in components:
       nodesForInstr, edgesForNode = generateLatencyGraph(instructions, uArchConfig, 'stack')
       lat = computeMaximumLatencyForGraph(instructions, nodesForInstr, edgesForNode)[0]
       TPs.append(('lat', lat))
    if 'portUsage' in components:
-      TPs.append(('portUsage', computePortUsage(instructions)))
+      TPs.append(('portUsage', computePortUsageLimit(instructions)))
 
    return TPs
