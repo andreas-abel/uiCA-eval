@@ -22,7 +22,7 @@ def computeDecLimitSimple(instructions):
 def getAnalyticalPredictionForUnrolling(instructions: List[Instr], hex, xedDisas, uArchConfig: MicroArchConfig, components: List[str]):
    TPs = []
    if 'predec' in components:
-      TPs.append(('predec', computePredecLimit(hex, xedDisas)))
+      TPs.append(('predec', computePredecLimit(xedDisas)))
    if 'predecSimple' in components:
       TPs.append(('predec', computePredecLimitSimple(hex, instructions)))
    if 'dec' in components:
@@ -56,7 +56,7 @@ def getAnalyticalPredictionForLoop(instructions: List[Instr], hex, xedDisas, uAr
    if 'lsd' in components:
       TPs.append(('lsd', computeLSDLimit(instructions, uArchConfig) if (uopSource == 'LSD') else 0))
    if 'predec' in components:
-      TPs.append(('predec', computePredecLimit(hex, xedDisas, loop=1) if (uopSource == 'MITE') else 0))
+      TPs.append(('predec', computePredecLimit(xedDisas, loop=1) if (uopSource == 'MITE') else 0))
    if 'predecSimple' in components:
       TPs.append(('predec', computePredecLimitSimple(hex, instructions) if (uopSource == 'MITE') else 0))
    if 'dec' in components:
